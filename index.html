@@ -7,7 +7,6 @@
 </head>
 
 <body>
-
   <h1>Momin Chat</h1>
   <p>Facebook کے ذریعے لاگ اِن کریں</p>
 
@@ -18,8 +17,7 @@
   <p id="status"></p>
 
   <script type="module">
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
     import {
       getAuth,
@@ -29,7 +27,7 @@
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmDd37yY8Q-zyDUfE",
+      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmD37yY8Q-zyDUfE",
       authDomain: "momin-chat-74a0e.firebaseapp.com",
       projectId: "momin-chat-74a0e",
       storageBucket: "momin-chat-74a0e.firebasestorage.app",
@@ -51,6 +49,7 @@
       try {
         await signInWithRedirect(auth, provider);
       } catch (error) {
+        console.error(error);
         status.textContent = "Login Error: " + error.message;
       }
     });
@@ -58,13 +57,15 @@
     getRedirectResult(auth)
       .then((result) => {
         if (result && result.user) {
-          status.textContent = "Facebook Login کامیاب ہو گیا!";
+          status.textContent =
+            "Facebook Login کامیاب ہو گیا! خوش آمدید " +
+            (result.user.displayName || "User");
         }
       })
       .catch((error) => {
+        console.error(error);
         status.textContent = "Login Error: " + error.message;
       });
   </script>
-
 </body>
 </html>
