@@ -29,7 +29,7 @@
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAtQTsqD97dP4bOhMmDd37yY8Q-zyDUfE",
+      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmDd37yY8Q-zyDUfE",
       authDomain: "momin-chat-74a0e.firebaseapp.com",
       projectId: "momin-chat-74a0e",
       storageBucket: "momin-chat-74a0e.firebasestorage.app",
@@ -58,13 +58,11 @@
     getRedirectResult(auth)
       .then((result) => {
         if (result && result.user) {
-          status.textContent =
-            "Facebook Login کامیاب ہو گیا!";
+          status.textContent = "Facebook Login کامیاب ہو گیا!";
         }
       })
       .catch((error) => {
-        status.textContent =
-          "Login Error: " + error.message;
+        status.textContent = "Login Error: " + error.message;
       });
   </script>
 
