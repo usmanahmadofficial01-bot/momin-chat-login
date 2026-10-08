@@ -5,17 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Momin Chat Login</title>
 </head>
+
 <body>
 
   <h1>Momin Chat</h1>
-  <p>Welcome to Momin Chat</p>
+  <p>Facebook کے ذریعے لاگ اِن کریں</p>
 
-  <button onclick="loginWithFacebook()">Login with Facebook</button>
+  <button id="facebookLogin">Login with Facebook</button>
 
-  <script>
-    function loginWithFacebook() {
-      alert("Facebook Login will be connected with Firebase.");
-    }
+  <p id="status"></p>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+
+    import {
+      getAuth,
+      FacebookAuthProvider,
+      signInWithRedirect,
+      getRedirectResult
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmDd37yY8Q-zyDUfE",
+      authDomain: "momin-chat-74a0e.firebaseapp.com",
+      projectId: "momin-chat-74a0e",
+      storageBucket: "momin-chat-74a0e.firebasestorage.app",
+      messagingSenderId: "1038313929500",
+      appId: "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
+      measurementId: "G-QRYL7GM7LE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const provider = new FacebookAuthProvider();
+
+    document.getElementById("facebookLogin").addEventListener("click", () => {
+      signInWithRedirect(auth, provider);
+    });
+
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          document.getElementById("status").textContent =
+            "Facebook Login کامیاب ہو گیا!";
+        }
+      })
+      .catch((error) => {
+        document.getElementById("status").textContent =
+          "Login Error: " + error.message;
+      });
   </script>
 
 </body>
