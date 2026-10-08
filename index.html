@@ -22,8 +22,7 @@
     import {
       getAuth,
       FacebookAuthProvider,
-      signInWithRedirect,
-      getRedirectResult
+      signInWithPopup
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -47,25 +46,21 @@
       status.textContent = "Facebook Login شروع ہو رہا ہے...";
 
       try {
-        await signInWithRedirect(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+
+        const user = result.user;
+
+        status.textContent =
+          "Facebook Login کامیاب ہو گیا! خوش آمدید " +
+          (user.displayName || "User");
+
       } catch (error) {
         console.error(error);
-        status.textContent = "Login Error: " + error.message;
+
+        status.textContent =
+          "Login Error: " + error.message;
       }
     });
-
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result && result.user) {
-          status.textContent =
-            "Facebook Login کامیاب ہو گیا! خوش آمدید " +
-            (result.user.displayName || "User");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        status.textContent = "Login Error: " + error.message;
-      });
   </script>
 </body>
 </html>
