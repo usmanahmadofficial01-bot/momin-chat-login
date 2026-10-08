@@ -1,191 +1,379 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Momin Chat</title>
 
-  <script async defer crossorigin="anonymous"
-    src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      min-height: 100vh;
+      background: white;
+    }
+
+    .header {
+      background: #075e54;
+      color: white;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .screen {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #1877f2;
+      color: white;
+    }
+
+    button.logout {
+      background: #dc3545;
+    }
+
+    button.chatButton {
+      background: #075e54;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #16a34a;
+      margin-top: 3px;
+    }
+
+    .chatHeader {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #075e54;
+      color: white;
+      padding: 12px;
+    }
+
+    .chatHeader img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    .chatMessages {
+      height: 55vh;
+      overflow-y: auto;
+      padding: 15px;
+      background: #efeae2;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 9px 12px;
+      margin: 7px 0;
+      border-radius: 9px;
+      word-wrap: break-word;
+    }
+
+    .sent {
+      margin-left: auto;
+      background: #d9fdd3;
+    }
+
+    .received {
+      margin-right: auto;
+      background: white;
+    }
+
+    .messageTime {
+      font-size: 10px;
+      color: #6b7280;
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    .ticks {
+      font-size: 13px;
+      margin-left: 4px;
+    }
+
+    .chatInputArea {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: white;
+    }
+
+    .chatInputArea input {
+      margin: 0;
+      flex: 1;
+    }
+
+    .sendButton {
+      width: auto;
+      margin: 0;
+      padding: 0 18px;
+      background: #075e54;
+    }
+
+    .info {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #dc2626;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: #16a34a;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <h1>Momin Chat</h1>
+<div class="container">
 
-  <p>Facebook کے ذریعے لاگ اِن کریں</p>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
 
-  <button id="facebookLogin" type="button">
-    Login with Facebook
-  </button>
+    <div class="header">
+      Momin Chat
+    </div>
 
-  <p id="status">تیار ہے۔</p>
+    <div class="screen">
 
-  <script type="module">
+      <div class="card">
+        <h2>Welcome to Momin Chat</h2>
+        <p class="info">
+          Sign in securely to start chatting.
+        </p>
 
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+        <button id="facebookLogin">
+          Continue with Facebook
+        </button>
 
-    import {
-      getAuth,
-      signInWithCredential,
-      FacebookAuthProvider,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+        <div id="loginMessage"></div>
+      </div>
 
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+    </div>
+  </div>
 
 
-    // Firebase Configuration
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="hidden">
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmD37yY8Q-zyDUfE",
-      authDomain: "momin-chat-74a0e.firebaseapp.com",
-      projectId: "momin-chat-74a0e",
-      storageBucket: "momin-chat-74a0e.firebasestorage.app",
-      messagingSenderId: "1038313929500",
-      appId: "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
-      measurementId: "G-QRYL7GM7LE"
-    };
+    <div class="header">
+      Momin Chat
+    </div>
 
+    <div class="screen">
 
-    // Firebase شروع
+      <div class="card">
 
-    const app = initializeApp(firebaseConfig);
+        <div class="profile">
 
-    const auth = getAuth(app);
+          <img id="userPhoto" src="" alt="Profile">
 
-    const db = getFirestore(app);
+          <div>
+            <div id="userName"></div>
+            <div id="userStatus" class="status">
+              Online
+            </div>
+          </div>
 
-    const button = document.getElementById("facebookLogin");
+        </div>
 
-    const status = document.getElementById("status");
+      </div>
 
 
-    // Facebook SDK
+      <div class="card">
 
-    window.fbAsyncInit = function () {
+        <h3>Start a New Chat</h3>
 
-      FB.init({
-        appId: "1400080655441962",
-        cookie: true,
-        xfbml: true,
-        version: "v24.0"
-      });
+        <input
+          type="text"
+          id="recipientUid"
+          placeholder="Enter recipient User ID"
+        >
 
-    };
+        <button id="startChatButton" class="chatButton">
+          Start Chat
+        </button>
 
+        <div class="info">
+          Your email address and phone number are not shown to other users.
+        </div>
 
-    // Facebook Login
+        <div id="chatMessage"></div>
 
-    button.addEventListener("click", function () {
+      </div>
 
-      status.textContent =
-        "Facebook Login شروع ہو رہا ہے...";
 
+      <div class="card">
 
-      if (typeof FB === "undefined") {
+        <h3>Privacy</h3>
 
-        status.textContent =
-          "Facebook SDK ابھی لوڈ نہیں ہوا۔ دوبارہ کوشش کریں۔";
+        <p class="info">
+          Your private account information is protected.
+          Other users cannot access your private email or phone number.
+        </p>
 
-        return;
-      }
+      </div>
 
 
-      FB.login(function(response) {
+      <button id="logoutButton" class="logout">
+        Log Out
+      </button>
 
-        if (!response.authResponse) {
+    </div>
+  </div>
 
-          status.textContent =
-            "Facebook Login مکمل نہیں ہوا۔";
 
-          return;
-        }
+  <!-- CHAT SCREEN -->
+  <div id="chatScreen" class="hidden">
 
+    <div class="chatHeader">
 
-        status.textContent =
-          "Facebook Login کامیاب۔ Firebase میں لاگ اِن ہو رہا ہے...";
+      <button
+        id="backButton"
+        style="width:auto;margin:0;background:transparent;padding:5px 10px;font-size:24px;"
+      >
+        ←
+      </button>
 
+      <img id="chatUserPhoto" src="" alt="Profile">
 
-        const accessToken =
-          response.authResponse.accessToken;
+      <div>
+        <div id="chatUserName"></div>
 
+        <div
+          id="chatUserStatus"
+          style="font-size:12px;"
+        >
+          Offline
+        </div>
+      </div>
 
-        const credential =
-          FacebookAuthProvider.credential(accessToken);
+    </div>
 
 
-        signInWithCredential(auth, credential)
+    <div id="chatMessages" class="chatMessages"></div>
 
-          .then(async function(result) {
 
-            const user = result.user;
+    <div class="chatInputArea">
 
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message..."
+      >
 
-            // صارف کی معلومات Firestore میں محفوظ کریں
+      <button
+        id="sendButton"
+        class="sendButton"
+      >
+        Send
+      </button>
 
-            await setDoc(
-              doc(db, "users", user.uid),
-              {
-                uid: user.uid,
-                name: user.displayName || "",
-                email: user.email || "",
-                photoURL: user.photoURL || "",
-                createdAt: serverTimestamp()
-              },
-              {
-                merge: true
-              }
-            );
+    </div>
 
+  </div>
 
-            status.textContent =
-              "Facebook Login کامیاب ہو گیا! خوش آمدید " +
-              (user.displayName || "User");
+</div>
 
-          })
 
-          .catch(function(error) {
+<!-- Firebase -->
+<script type="module">
 
-            status.textContent =
-              "Firebase Login Error: " + error.code;
+  import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-            console.error(error);
+  import {
+    getAuth,
+    FacebookAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+  } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-          });
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    collection,
+    addDoc,
+    query,
+    orderBy,
+    onSnapshot,
+    serverTimestamp,
+    updateDoc
+  } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-      }, {
 
-        scope: "public_profile,email"
+  /* Firebase Configuration */
 
-      });
-
-    });
-
-
-    // صارف پہلے سے لاگ اِن ہو تو
-
-    onAuthStateChanged(auth, function(user) {
-
-      if (user) {
-
-        console.log(
-          "Firebase میں صارف لاگ اِن ہے:",
-          user.displayName,
-          user.uid
-        );
-
-      }
-
-    });
-
-  </script>
-
-</body>
-</html>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmD37yY8Q-zyDUfE",
+    authDomain: "momin-chat-74a0e.firebaseapp.com",
+    projectId: "momin-chat-74a0e",
+    storageBucket: "momin-chat-74a0e.fire
