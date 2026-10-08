@@ -19,8 +19,8 @@
 
     .app {
       max-width: 600px;
-      margin: 0 auto;
       min-height: 100vh;
+      margin: auto;
       background: white;
     }
 
@@ -39,7 +39,6 @@
     .header p {
       margin: 6px 0 0;
       font-size: 13px;
-      opacity: 0.9;
     }
 
     .screen {
@@ -60,17 +59,17 @@
     }
 
     .facebook-btn {
-      background: #1877f2;
-      color: white;
       width: 100%;
       margin-top: 20px;
+      background: #1877f2;
+      color: white;
     }
 
     .logout-btn {
+      width: 100%;
+      margin-top: 20px;
       background: #ef4444;
       color: white;
-      width: 100%;
-      margin-top: 15px;
     }
 
     .search-box {
@@ -88,10 +87,6 @@
       padding: 12px;
       border-bottom: 1px solid #e5e7eb;
       cursor: pointer;
-    }
-
-    .user-card:hover {
-      background: #f8fafc;
     }
 
     .avatar {
@@ -119,6 +114,35 @@
       margin-top: 3px;
     }
 
+    .profile {
+      text-align: center;
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .profile img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .status {
+      color: #16a34a;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .error {
+      color: #dc2626;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
     .chat-header {
       display: flex;
       align-items: center;
@@ -131,13 +155,12 @@
     .back-btn {
       background: transparent;
       color: white;
+      font-size: 22px;
       padding: 5px 10px;
-      font-size: 20px;
     }
 
-    .chat-user-name {
+    .chat-name {
       font-weight: bold;
-      font-size: 17px;
     }
 
     .messages {
@@ -153,7 +176,7 @@
       margin-bottom: 8px;
     }
 
-    .message-row.mine {
+    .mine {
       justify-content: flex-end;
     }
 
@@ -176,13 +199,8 @@
     .message-time {
       font-size: 10px;
       color: #6b7280;
-      margin-top: 4px;
       text-align: right;
-    }
-
-    .ticks {
-      margin-left: 4px;
-      font-size: 12px;
+      margin-top: 4px;
     }
 
     .blue {
@@ -193,7 +211,6 @@
       display: flex;
       gap: 8px;
       padding: 10px;
-      background: white;
       border-top: 1px solid #ddd;
     }
 
@@ -210,36 +227,6 @@
       color: white;
       border-radius: 20px;
     }
-
-    .profile {
-      text-align: center;
-      padding: 20px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .profile img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .status {
-      margin-top: 10px;
-      color: #6b7280;
-      font-size: 13px;
-    }
-
-    .error {
-      color: #dc2626;
-      margin-top: 15px;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .hidden {
-      display: none !important;
-    }
   </style>
 </head>
 
@@ -253,7 +240,9 @@
   </div>
 
   <div id="loginScreen" class="screen center">
+
     <h2>Welcome to Momin Chat</h2>
+
     <p>Sign in securely to start chatting.</p>
 
     <button id="facebookLogin" class="facebook-btn">
@@ -261,17 +250,27 @@
     </button>
 
     <div id="loginError" class="error"></div>
+
   </div>
+
 
   <div id="homeScreen" class="hidden">
 
     <div class="profile">
+
       <img id="myPhoto" src="" alt="Profile">
+
       <h3 id="myName"></h3>
-      <div id="myStatus" class="status">Online</div>
+
+      <div class="status">
+        Online
+      </div>
+
     </div>
 
+
     <div class="screen">
+
       <input
         id="searchInput"
         class="search-box"
@@ -284,14 +283,19 @@
       <button id="logoutButton" class="logout-btn">
         Sign Out
       </button>
+
     </div>
 
   </div>
 
+
   <div id="chatScreen" class="hidden">
 
     <div class="chat-header">
-      <button id="backButton" class="back-btn">←</button>
+
+      <button id="backButton" class="back-btn">
+        ←
+      </button>
 
       <img
         id="chatPhoto"
@@ -301,14 +305,18 @@
       >
 
       <div>
-        <div id="chatName" class="chat-user-name"></div>
-        <div id="chatStatus" style="font-size:11px;"></div>
+        <div id="chatName" class="chat-name"></div>
+        <div id="chatStatus"></div>
       </div>
+
     </div>
+
 
     <div id="messages" class="messages"></div>
 
+
     <div class="send-area">
+
       <input
         id="messageInput"
         class="message-input"
@@ -319,6 +327,7 @@
       <button id="sendButton" class="send-btn">
         Send
       </button>
+
     </div>
 
   </div>
@@ -326,40 +335,22 @@
 </div>
 
 
-<!-- Facebook SDK -->
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: "1400080655441962",
-      cookie: true,
-      xfbml: false,
-      version: "v24.0"
-    });
-  };
-</script>
-
-<script
-  async
-  defer
-  crossorigin="anonymous"
-  src="https://connect.facebook.net/en_US/sdk.js">
-</script>
-
-
-<!-- Firebase -->
 <script type="module">
 
   import {
     initializeApp
   } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
+
   import {
     getAuth,
     FacebookAuthProvider,
-    signInWithCredential,
+    signInWithRedirect,
+    getRedirectResult,
     onAuthStateChanged,
     signOut
   } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
 
   import {
     getFirestore,
@@ -367,45 +358,77 @@
     setDoc,
     getDoc,
     collection,
-    query,
-    where,
     getDocs,
+    query,
+    orderBy,
     addDoc,
     onSnapshot,
     updateDoc,
-    serverTimestamp,
-    orderBy
+    serverTimestamp
   } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmD37yY8Q-zyDUfE",
-    authDomain: "momin-chat-74a0e.firebaseapp.com",
-    projectId: "momin-chat-74a0e",
-    storageBucket: "momin-chat-74a0e.firebasestorage.app",
-    messagingSenderId: "1038313929500",
-    appId: "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
-    measurementId: "G-QRYL7GM7LE"
+
+    apiKey:
+      "AIzaSyAtQTsqYdD97pD4bOhMmD37yY8Q-zyDUfE",
+
+    authDomain:
+      "momin-chat-74a0e.firebaseapp.com",
+
+    projectId:
+      "momin-chat-74a0e",
+
+    storageBucket:
+      "momin-chat-74a0e.firebasestorage.app",
+
+    messagingSenderId:
+      "1038313929500",
+
+    appId:
+      "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
+
+    measurementId:
+      "G-QRYL7GM7LE"
   };
 
 
-  const app = initializeApp(firebaseConfig);
+  const app =
+    initializeApp(firebaseConfig);
 
-  const auth = getAuth(app);
 
-  const db = getFirestore(app);
+  const auth =
+    getAuth(app);
+
+
+  const db =
+    getFirestore(app);
+
+
+  const provider =
+    new FacebookAuthProvider();
+
+
+  provider.addScope("email");
 
 
   let currentUser = null;
+
   let currentChatUser = null;
+
   let unsubscribeMessages = null;
 
 
-  const loginScreen = document.getElementById("loginScreen");
-  const homeScreen = document.getElementById("homeScreen");
-  const chatScreen = document.getElementById("chatScreen");
+  const loginScreen =
+    document.getElementById("loginScreen");
 
-  const facebookLogin =
+  const homeScreen =
+    document.getElementById("homeScreen");
+
+  const chatScreen =
+    document.getElementById("chatScreen");
+
+  const loginButton =
     document.getElementById("facebookLogin");
 
   const loginError =
@@ -417,14 +440,14 @@
   const searchInput =
     document.getElementById("searchInput");
 
-  const logoutButton =
-    document.getElementById("logoutButton");
-
   const myPhoto =
     document.getElementById("myPhoto");
 
   const myName =
     document.getElementById("myName");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
 
   const messages =
     document.getElementById("messages");
@@ -440,51 +463,55 @@
     Facebook Login
   */
 
-  facebookLogin.addEventListener("click", () => {
+  loginButton.addEventListener(
+    "click",
+    async () => {
 
-    loginError.textContent = "Connecting to Facebook...";
-
-    if (typeof FB === "undefined") {
       loginError.textContent =
-        "Facebook Login is still loading. Please wait a moment and try again.";
-      return;
-    }
+        "Connecting to Facebook...";
 
-    FB.login(async function(response) {
+      loginButton.disabled = true;
 
       try {
 
-        if (response.status !== "connected") {
-
-          loginError.textContent =
-            "Facebook Login was cancelled or not completed.";
-
-          return;
-        }
-
-        const accessToken =
-          response.authResponse.accessToken;
-
-        const credential =
-          FacebookAuthProvider.credential(accessToken);
-
-        await signInWithCredential(auth, credential);
-
-        loginError.textContent = "";
+        await signInWithRedirect(
+          auth,
+          provider
+        );
 
       } catch (error) {
 
         console.error(error);
 
+        loginButton.disabled = false;
+
         loginError.textContent =
-          "Login failed: " + error.message;
+          error.message;
+
       }
 
-    }, {
-      scope: "public_profile,email"
-    });
+    }
+  );
 
-  });
+
+  /*
+    Complete Facebook Redirect
+  */
+
+  try {
+
+    await getRedirectResult(auth);
+
+  } catch (error) {
+
+    console.error(error);
+
+    loginError.textContent =
+      "Facebook Login failed: " +
+      error.message;
+
+    loginButton.disabled = false;
+  }
 
 
   /*
@@ -494,36 +521,54 @@
   async function saveUser(user) {
 
     const privateRef =
-      doc(db, "users", user.uid);
+      doc(
+        db,
+        "users",
+        user.uid
+      );
 
-    const privateData = {
-      uid: user.uid,
-      name: user.displayName || "User",
-      email: user.email || "",
-      photoURL: user.photoURL || "",
-      createdAt: serverTimestamp()
-    };
 
-    const oldUser =
+    const privateSnapshot =
       await getDoc(privateRef);
 
-    if (!oldUser.exists()) {
-      await setDoc(privateRef, privateData);
+
+    if (!privateSnapshot.exists()) {
+
+      await setDoc(
+        privateRef,
+        {
+          uid: user.uid,
+          name: user.displayName || "User",
+          email: user.email || "",
+          photoURL: user.photoURL || "",
+          createdAt: serverTimestamp()
+        }
+      );
+
     } else {
+
       await setDoc(
         privateRef,
         {
           name: user.displayName || "User",
-          photoURL: user.photoURL || "",
-          email: user.email || ""
+          email: user.email || "",
+          photoURL: user.photoURL || ""
         },
-        { merge: true }
+        {
+          merge: true
+        }
       );
+
     }
 
 
     const publicRef =
-      doc(db, "publicProfiles", user.uid);
+      doc(
+        db,
+        "publicProfiles",
+        user.uid
+      );
+
 
     await setDoc(
       publicRef,
@@ -534,30 +579,11 @@
         online: true,
         lastSeen: serverTimestamp()
       },
-      { merge: true }
-    );
-  }
-
-
-  /*
-    Online Status
-  */
-
-  async function setOnlineStatus(isOnline) {
-
-    if (!currentUser) return;
-
-    const ref =
-      doc(db, "publicProfiles", currentUser.uid);
-
-    await setDoc(
-      ref,
       {
-        online: isOnline,
-        lastSeen: serverTimestamp()
-      },
-      { merge: true }
+        merge: true
+      }
     );
+
   }
 
 
@@ -565,114 +591,193 @@
     Authentication State
   */
 
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(
+    auth,
+    async (user) => {
 
-    if (user) {
+      if (user) {
 
-      currentUser = user;
+        currentUser = user;
 
-      await saveUser(user);
+        try {
 
-      loginScreen.classList.add("hidden");
-      chatScreen.classList.add("hidden");
-      homeScreen.classList.remove("hidden");
+          await saveUser(user);
 
-      myName.textContent =
-        user.displayName || "User";
+        } catch (error) {
 
-      myPhoto.src =
-        user.photoURL ||
-        "https://via.placeholder.com/80";
+          console.error(error);
 
-      await loadUsers();
+        }
 
-    } else {
 
-      currentUser = null;
+        loginScreen.classList.add("hidden");
 
-      loginScreen.classList.remove("hidden");
-      homeScreen.classList.add("hidden");
-      chatScreen.classList.add("hidden");
+        chatScreen.classList.add("hidden");
+
+        homeScreen.classList.remove("hidden");
+
+
+        myName.textContent =
+          user.displayName || "User";
+
+
+        myPhoto.src =
+          user.photoURL ||
+          "https://via.placeholder.com/80";
+
+
+        await loadUsers();
+
+      } else {
+
+        currentUser = null;
+
+        loginScreen.classList.remove("hidden");
+
+        homeScreen.classList.add("hidden");
+
+        chatScreen.classList.add("hidden");
+
+        loginButton.disabled = false;
+
+      }
+
     }
-
-  });
+  );
 
 
   /*
     Load Users
   */
 
-  async function loadUsers(searchText = "") {
+  async function loadUsers(
+    searchText = ""
+  ) {
 
     usersList.innerHTML =
       "<p>Loading users...</p>";
 
+
     try {
 
       const snapshot =
-        await getDocs(collection(db, "publicProfiles"));
+        await getDocs(
+          collection(
+            db,
+            "publicProfiles"
+          )
+        );
+
 
       usersList.innerHTML = "";
 
+
       let found = 0;
 
-      snapshot.forEach((docSnap) => {
 
-        const user = docSnap.data();
+      snapshot.forEach(
+        (docSnap) => {
 
-        if (!currentUser ||
-            user.uid === currentUser.uid) {
-          return;
-        }
+          const user =
+            docSnap.data();
 
-        const name =
-          (user.name || "User").toLowerCase();
 
-        if (
-          searchText &&
-          !name.includes(searchText.toLowerCase())
-        ) {
-          return;
-        }
+          if (
+            !currentUser ||
+            user.uid === currentUser.uid
+          ) {
 
-        found++;
+            return;
 
-        const card =
-          document.createElement("div");
+          }
 
-        card.className = "user-card";
 
-        card.innerHTML = `
-          <img
-            class="avatar"
-            src="${user.photoURL || "https://via.placeholder.com/45"}"
-            alt="Profile"
-          >
+          const name =
+            (
+              user.name || "User"
+            ).toLowerCase();
 
-          <div>
-            <div class="user-name">
-              ${escapeHtml(user.name || "User")}
+
+          if (
+            searchText &&
+            !name.includes(
+              searchText.toLowerCase()
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          found++;
+
+
+          const card =
+            document.createElement("div");
+
+
+          card.className =
+            "user-card";
+
+
+          card.innerHTML = `
+
+            <img
+              class="avatar"
+              src="${
+                user.photoURL ||
+                "https://via.placeholder.com/45"
+              }"
+              alt="Profile"
+            >
+
+            <div>
+
+              <div class="user-name">
+                ${escapeHtml(
+                  user.name || "User"
+                )}
+              </div>
+
+              <div class="${
+                user.online
+                  ? "online"
+                  : "offline"
+              }">
+
+                ${
+                  user.online
+                    ? "Online"
+                    : "Offline"
+                }
+
+              </div>
+
             </div>
 
-            <div class="${user.online ? "online" : "offline"}">
-              ${user.online ? "Online" : "Offline"}
-            </div>
-          </div>
-        `;
+          `;
 
-        card.addEventListener("click", () => {
-          openChat(user);
-        });
 
-        usersList.appendChild(card);
+          card.addEventListener(
+            "click",
+            () => openChat(user)
+          );
 
-      });
+
+          usersList.appendChild(card);
+
+        }
+      );
 
 
       if (found === 0) {
+
         usersList.innerHTML =
           "<p>No users found.</p>";
+
       }
+
 
     } catch (error) {
 
@@ -680,15 +785,22 @@
 
       usersList.innerHTML =
         "<p>Unable to load users.</p>";
+
     }
+
   }
 
 
-  searchInput.addEventListener("input", () => {
+  searchInput.addEventListener(
+    "input",
+    () => {
 
-    loadUsers(searchInput.value.trim());
+      loadUsers(
+        searchInput.value.trim()
+      );
 
-  });
+    }
+  );
 
 
   /*
@@ -699,18 +811,32 @@
 
     currentChatUser = user;
 
+
     homeScreen.classList.add("hidden");
+
     chatScreen.classList.remove("hidden");
 
-    document.getElementById("chatName").textContent =
+
+    document.getElementById(
+      "chatName"
+    ).textContent =
       user.name || "User";
 
-    document.getElementById("chatPhoto").src =
+
+    document.getElementById(
+      "chatPhoto"
+    ).src =
       user.photoURL ||
       "https://via.placeholder.com/45";
 
-    document.getElementById("chatStatus").textContent =
-      user.online ? "Online" : "Offline";
+
+    document.getElementById(
+      "chatStatus"
+    ).textContent =
+      user.online
+        ? "Online"
+        : "Offline";
+
 
     await loadMessages();
 
@@ -721,9 +847,15 @@
     Conversation ID
   */
 
-  function getConversationId(uid1, uid2) {
+  function getConversationId(
+    uid1,
+    uid2
+  ) {
 
-    return [uid1, uid2]
+    return [
+      uid1,
+      uid2
+    ]
       .sort()
       .join("_");
 
@@ -736,14 +868,24 @@
 
   async function loadMessages() {
 
-    if (!currentUser || !currentChatUser) {
+    if (
+      !currentUser ||
+      !currentChatUser
+    ) {
+
       return;
+
     }
 
+
     if (unsubscribeMessages) {
+
       unsubscribeMessages();
+
       unsubscribeMessages = null;
+
     }
+
 
     const conversationId =
       getConversationId(
@@ -761,26 +903,27 @@
 
 
     const conversationSnapshot =
-      await getDoc(conversationRef);
+      await getDoc(
+        conversationRef
+      );
 
 
-    if (!conversationSnapshot.exists()) {
+    if (
+      !conversationSnapshot.exists()
+    ) {
 
-      try {
-
-        await setDoc(conversationRef, {
+      await setDoc(
+        conversationRef,
+        {
           participantIds: [
             currentUser.uid,
             currentChatUser.uid
           ],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
-        });
+        }
+      );
 
-      } catch (error) {
-
-        console.error(error);
-      }
     }
 
 
@@ -793,40 +936,49 @@
       );
 
 
-    const q =
+    const messagesQuery =
       query(
         messagesRef,
-        orderBy("createdAt", "asc")
+        orderBy(
+          "createdAt",
+          "asc"
+        )
       );
 
 
     unsubscribeMessages =
-      onSnapshot(q, (snapshot) => {
+      onSnapshot(
+        messagesQuery,
+        (snapshot) => {
 
-        messages.innerHTML = "";
+          messages.innerHTML = "";
 
-        snapshot.forEach((messageDoc) => {
 
-          const data =
-            messageDoc.data();
+          snapshot.forEach(
+            (messageDoc) => {
 
-          displayMessage(
-            messageDoc.id,
-            data
+              displayMessage(
+                messageDoc.id,
+                messageDoc.data()
+              );
+
+            }
           );
 
-        });
 
-        messages.scrollTop =
-          messages.scrollHeight;
+          messages.scrollTop =
+            messages.scrollHeight;
 
-      }, (error) => {
+        },
+        (error) => {
 
-        console.error(error);
+          console.error(error);
 
-        messages.innerHTML =
-          "<p>Unable to load messages.</p>";
-      });
+          messages.innerHTML =
+            "<p>Unable to load messages.</p>";
+
+        }
+      );
 
   }
 
@@ -835,27 +987,40 @@
     Display Message
   */
 
-  function displayMessage(id, data) {
+  function displayMessage(
+    id,
+    data
+  ) {
 
     const row =
       document.createElement("div");
 
+
     const mine =
-      data.senderId === currentUser.uid;
+      data.senderId ===
+      currentUser.uid;
+
 
     row.className =
       "message-row " +
-      (mine ? "mine" : "theirs");
+      (
+        mine
+          ? "mine"
+          : "theirs"
+      );
 
 
     const bubble =
       document.createElement("div");
 
-    bubble.className = "message";
+
+    bubble.className =
+      "message";
 
 
     const text =
       document.createElement("div");
+
 
     text.textContent =
       data.text || "";
@@ -864,17 +1029,19 @@
     const time =
       document.createElement("div");
 
-    time.className = "message-time";
+
+    time.className =
+      "message-time";
 
 
     let timeText = "";
 
+
     if (data.createdAt) {
 
       const date =
-        data.createdAt.toDate
-          ? data.createdAt.toDate()
-          : new Date();
+        data.createdAt.toDate();
+
 
       timeText =
         date.toLocaleTimeString(
@@ -884,31 +1051,45 @@
             minute: "2-digit"
           }
         );
+
     }
 
 
     let ticks = "";
 
+
     if (mine) {
 
       if (data.read) {
+
         ticks =
-          '<span class="ticks blue">✓✓</span>';
-      } else if (data.delivered) {
+          '<span class="blue">✓✓</span>';
+
+      } else if (
+        data.delivered
+      ) {
+
         ticks =
-          '<span class="ticks">✓✓</span>';
+          "<span>✓✓</span>";
+
       } else {
+
         ticks =
-          '<span class="ticks">✓</span>';
+          "<span>✓</span>";
+
       }
+
     }
 
 
     time.innerHTML =
-      timeText + ticks;
+      timeText +
+      " " +
+      ticks;
 
 
     bubble.appendChild(text);
+
     bubble.appendChild(time);
 
     row.appendChild(bubble);
@@ -916,13 +1097,8 @@
     messages.appendChild(row);
 
 
-    /*
-      Mark received message as delivered/read
-    */
-
     if (
       !mine &&
-      currentChatUser &&
       !data.read
     ) {
 
@@ -931,6 +1107,7 @@
           currentUser.uid,
           currentChatUser.uid
         );
+
 
       const messageRef =
         doc(
@@ -941,10 +1118,15 @@
           id
         );
 
-      updateDoc(messageRef, {
-        delivered: true,
-        read: true
-      }).catch(() => {});
+
+      updateDoc(
+        messageRef,
+        {
+          delivered: true,
+          read: true
+        }
+      ).catch(() => {});
+
     }
 
   }
@@ -959,12 +1141,15 @@
     const text =
       messageInput.value.trim();
 
+
     if (
       !text ||
       !currentUser ||
       !currentChatUser
     ) {
+
       return;
+
     }
 
 
@@ -985,12 +1170,23 @@
           "messages"
         ),
         {
-          senderId: currentUser.uid,
-          receiverId: currentChatUser.uid,
-          text: text,
-          delivered: false,
-          read: false,
-          createdAt: serverTimestamp()
+          senderId:
+            currentUser.uid,
+
+          receiverId:
+            currentChatUser.uid,
+
+          text:
+            text,
+
+          delivered:
+            false,
+
+          read:
+            false,
+
+          createdAt:
+            serverTimestamp()
         }
       );
 
@@ -1002,12 +1198,14 @@
           conversationId
         ),
         {
-          updatedAt: serverTimestamp()
+          updatedAt:
+            serverTimestamp()
         }
       );
 
 
       messageInput.value = "";
+
 
     } catch (error) {
 
@@ -1017,6 +1215,7 @@
         "Message could not be sent: " +
         error.message
       );
+
     }
 
   }
@@ -1032,8 +1231,12 @@
     "keydown",
     (event) => {
 
-      if (event.key === "Enter") {
+      if (
+        event.key === "Enter"
+      ) {
+
         sendMessage();
+
       }
 
     }
@@ -1041,41 +1244,111 @@
 
 
   /*
-    Back
+    Back Button
   */
 
   document
     .getElementById("backButton")
-    .addEventListener("click", () => {
+    .addEventListener(
+      "click",
+      () => {
 
-      if (unsubscribeMessages) {
-        unsubscribeMessages();
-        unsubscribeMessages = null;
+        if (
+          unsubscribeMessages
+        ) {
+
+          unsubscribeMessages();
+
+          unsubscribeMessages =
+            null;
+
+        }
+
+
+        currentChatUser = null;
+
+
+        chatScreen.classList.add(
+          "hidden"
+        );
+
+        homeScreen.classList.remove(
+          "hidden"
+        );
+
+
+        loadUsers(
+          searchInput.value.trim()
+        );
+
       }
-
-      currentChatUser = null;
-
-      chatScreen.classList.add("hidden");
-      homeScreen.classList.remove("hidden");
-
-      loadUsers(searchInput.value.trim());
-
-    });
+    );
 
 
   /*
-    Logout
+    Sign Out
   */
 
   logoutButton.addEventListener(
     "click",
     async () => {
 
-      await setOnlineStatus(false);
+      if (currentUser) {
+
+        await setDoc(
+          doc(
+            db,
+            "publicProfiles",
+            currentUser.uid
+          ),
+          {
+            online: false,
+            lastSeen:
+              serverTimestamp()
+          },
+          {
+            merge: true
+          }
+        );
+
+      }
+
 
       await signOut(auth);
 
     }
+  );
+
+
+  /*
+    Online heartbeat
+  */
+
+  setInterval(
+    async () => {
+
+      if (currentUser) {
+
+        await setDoc(
+          doc(
+            db,
+            "publicProfiles",
+            currentUser.uid
+          ),
+          {
+            online: true,
+            lastSeen:
+              serverTimestamp()
+          },
+          {
+            merge: true
+          }
+        );
+
+      }
+
+    },
+    60000
   );
 
 
@@ -1086,39 +1359,30 @@
   function escapeHtml(value) {
 
     return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
   }
-
-
-  /*
-    Keep user online
-  */
-
-  setInterval(async () => {
-
-    if (currentUser) {
-      await setOnlineStatus(true);
-    }
-
-  }, 60000);
-
-
-  window.addEventListener(
-    "beforeunload",
-    () => {
-
-      if (currentUser) {
-        setOnlineStatus(false);
-      }
-
-    }
-  );
 
 </script>
 
 </body>
-</html>
+  </html>
