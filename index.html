@@ -17,10 +17,14 @@
   <p id="status"></p>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
     import {
-      getAuth,
+      initializeAuth,
+      browserSessionPersistence,
+      browserPopupRedirectResolver,
       FacebookAuthProvider,
       signInWithPopup
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
@@ -36,17 +40,28 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+
+    const auth = initializeAuth(app, {
+      persistence: browserSessionPersistence,
+      popupRedirectResolver: browserPopupRedirectResolver
+    });
+
     const provider = new FacebookAuthProvider();
 
     const button = document.getElementById("facebookLogin");
     const status = document.getElementById("status");
 
     button.addEventListener("click", async () => {
+
       status.textContent = "Facebook Login شروع ہو رہا ہے...";
 
       try {
-        const result = await signInWithPopup(auth, provider);
+
+        const result = await signInWithPopup(
+          auth,
+          provider,
+          browserPopupRedirectResolver
+        );
 
         const user = result.user;
 
@@ -55,12 +70,18 @@
           (user.displayName || "User");
 
       } catch (error) {
+
         console.error(error);
 
         status.textContent =
-          "Login Error: " + error.message;
+          "Login Error: " +
+          error.code +
+          " — " +
+          error.message;
       }
+
     });
+
   </script>
 </body>
 </html>
