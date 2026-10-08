@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Momin Chat Login</title>
+  <title>Momin Chat</title>
 </head>
 
 <body>
@@ -11,7 +11,9 @@
   <h1>Momin Chat</h1>
   <p>Facebook کے ذریعے لاگ اِن کریں</p>
 
-  <button id="facebookLogin">Login with Facebook</button>
+  <button id="facebookLogin" type="button">
+    Login with Facebook
+  </button>
 
   <p id="status"></p>
 
@@ -27,7 +29,7 @@
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmDd37yY8Q-zyDUfE",
+      apiKey: "AIzaSyAtQTsqD97dP4bOhMmDd37yY8Q-zyDUfE",
       authDomain: "momin-chat-74a0e.firebaseapp.com",
       projectId: "momin-chat-74a0e",
       storageBucket: "momin-chat-74a0e.firebasestorage.app",
@@ -38,22 +40,30 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-
     const provider = new FacebookAuthProvider();
 
-    document.getElementById("facebookLogin").addEventListener("click", () => {
-      signInWithRedirect(auth, provider);
+    const button = document.getElementById("facebookLogin");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", async () => {
+      status.textContent = "Facebook Login شروع ہو رہا ہے...";
+
+      try {
+        await signInWithRedirect(auth, provider);
+      } catch (error) {
+        status.textContent = "Login Error: " + error.message;
+      }
     });
 
     getRedirectResult(auth)
       .then((result) => {
         if (result && result.user) {
-          document.getElementById("status").textContent =
+          status.textContent =
             "Facebook Login کامیاب ہو گیا!";
         }
       })
       .catch((error) => {
-        document.getElementById("status").textContent =
+        status.textContent =
           "Login Error: " + error.message;
       });
   </script>
