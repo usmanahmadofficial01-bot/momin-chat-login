@@ -22,7 +22,6 @@
 
   <p id="status">تیار ہے۔</p>
 
-
   <script type="module">
 
     import { initializeApp }
@@ -52,15 +51,13 @@
     // Firebase شروع کریں
 
     const app = initializeApp(firebaseConfig);
-
     const auth = getAuth(app);
 
     const button = document.getElementById("facebookLogin");
-
     const status = document.getElementById("status");
 
 
-    // Facebook JavaScript SDK
+    // Facebook SDK تیار ہونے کے بعد
 
     window.fbAsyncInit = function () {
 
@@ -87,7 +84,7 @@
       if (typeof FB === "undefined") {
 
         status.textContent =
-          "Facebook SDK ابھی لوڈ نہیں ہوا۔ براہِ کرم دوبارہ کوشش کریں۔";
+          "Facebook SDK ابھی لوڈ نہیں ہوا۔ دوبارہ کوشش کریں۔";
 
         return;
 
@@ -96,69 +93,64 @@
 
       FB.login(function(response) {
 
-        console.log("Facebook Response:", response);
+        console.log("Facebook response:", response);
 
 
-        if (response.authResponse) {
-
-          status.textContent =
-            "Facebook Login کامیاب۔ Firebase میں لاگ اِن ہو رہا ہے...";
-
-
-          const accessToken =
-            response.authResponse.accessToken;
-
-
-          const credential =
-            FacebookAuthProvider.credential(accessToken);
-
-
-          signInWithCredential(auth, credential)
-
-            .then(function(result) {
-
-              const user = result.user;
-
-
-              status.textContent =
-                "Facebook Login کامیاب ہو گیا! خوش آمدید " +
-                (user.displayName || "User");
-
-
-              console.log(
-                "Firebase Login کامیاب:",
-                user.uid
-              );
-
-            })
-
-
-            .catch(function(error) {
-
-              console.error(
-                "Firebase Error:",
-                error
-              );
-
-
-              status.textContent =
-                "Firebase Login Error: " +
-                error.code +
-                " — " +
-                error.message;
-
-            });
-
-        }
-
-
-        else {
+        if (!response.authResponse) {
 
           status.textContent =
             "Facebook Login مکمل نہیں ہوا۔";
 
+          return;
+
         }
 
+
+        status.textContent =
+          "Facebook Login کامیاب۔ Firebase میں لاگ اِن ہو رہا ہے...";
+
+
+        const accessToken =
+          response.authResponse.accessToken;
+
+
+        // Facebook Access Token کو Firebase Credential میں تبدیل کریں
+
+        const credential =
+          FacebookAuthProvider.credential(accessToken);
+
+
+        // Firebase میں لاگ اِن کریں
+
+        signInWithCredential(auth, credential)
+
+          .then(function(result) {
+
+            const user = result.user;
+
+            status.textContent =
+              "Facebook Login کامیاب ہو گیا! خوش آمدید " +
+              (user.displayName || "User");
+
+            console.log(
+              "Firebase User:",
+              user
+            );
+
+          })
+
+          .catch(function(error) {
+
+            console.error(
+              "Firebase Login Error:",
+              error
+            );
+
+            status.textContent =
+              "Firebase Login Error: " +
+              error.code;
+
+          });
 
       }, {
 
