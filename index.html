@@ -1,20 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Momin Chat</title>
+
+  <script async defer crossorigin="anonymous"
+    src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 
 <body>
+
   <h1>Momin Chat</h1>
+
   <p>Facebook کے ذریعے لاگ اِن کریں</p>
 
   <button id="facebookLogin" type="button">
     Login with Facebook
   </button>
 
-  <p id="status"></p>
+  <p id="status">تیار ہے۔</p>
 
   <script type="module">
 
@@ -22,12 +28,14 @@
       from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
     import {
-      initializeAuth,
-      browserSessionPersistence,
-      browserPopupRedirectResolver,
+      getAuth,
+      signInWithCredential,
       FacebookAuthProvider,
-      signInWithPopup
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+
+    // Firebase Configuration
 
     const firebaseConfig = {
       apiKey: "AIzaSyAtQTsqYdD97dP4bOhMmD37yY8Q-zyDUfE",
@@ -39,49 +47,127 @@
       measurementId: "G-QRYL7GM7LE"
     };
 
+
+    // Firebase شروع
+
     const app = initializeApp(firebaseConfig);
 
-    const auth = initializeAuth(app, {
-      persistence: browserSessionPersistence,
-      popupRedirectResolver: browserPopupRedirectResolver
-    });
-
-    const provider = new FacebookAuthProvider();
+    const auth = getAuth(app);
 
     const button = document.getElementById("facebookLogin");
     const status = document.getElementById("status");
 
-    button.addEventListener("click", async () => {
+
+    // Facebook SDK تیار ہونے کا انتظار
+
+    window.fbAsyncInit = function () {
+
+      FB.init({
+        appId: "1400080655441962",
+        cookie: true,
+        xfbml: true,
+        version: "v23.0"
+      });
+
+      console.log("Facebook SDK تیار ہے.");
+
+    };
+
+
+    // Facebook Login Button
+
+    button.addEventListener("click", function () {
 
       status.textContent = "Facebook Login شروع ہو رہا ہے...";
 
-      try {
+      if (typeof FB === "undefined") {
 
-        const result = await signInWithPopup(
-          auth,
-          provider,
-          browserPopupRedirectResolver
+        status.textContent =
+          "Facebook SDK ابھی لوڈ نہیں ہوا۔ دوبارہ کوشش کریں۔";
+
+        return;
+      }
+
+
+      FB.login(function(response) {
+
+        if (response.authResponse) {
+
+          status.textContent =
+            "Facebook Login کامیاب۔ Firebase میں لاگ اِن ہو رہا ہے...";
+
+
+          const accessToken =
+            response.authResponse.accessToken;
+
+
+          // Facebook Access Token کو Firebase Credential میں تبدیل کریں
+
+          const credential =
+            FacebookAuthProvider.credential(accessToken);
+
+
+          // Firebase میں Sign In
+
+          signInWithCredential(auth, credential)
+
+            .then(function(result) {
+
+              const user = result.user;
+
+              status.textContent =
+                "Facebook Login کامیاب ہو گیا! خوش آمدید " +
+                (user.displayName || "User");
+
+              console.log("Firebase User:", user);
+
+            })
+
+            .catch(function(error) {
+
+              console.error(error);
+
+              status.textContent =
+                "Firebase Login Error: " +
+                error.code +
+                " — " +
+                error.message;
+
+            });
+
+        }
+
+        else {
+
+          status.textContent =
+            "Facebook Login منسوخ کر دیا گیا۔";
+
+        }
+
+      }, {
+        scope: "public_profile,email"
+      });
+
+    });
+
+
+    // Firebase Login State
+
+    onAuthStateChanged(auth, function(user) {
+
+      if (user) {
+
+        console.log(
+          "Firebase میں صارف لاگ اِن ہے:",
+          user.displayName,
+          user.uid
         );
 
-        const user = result.user;
-
-        status.textContent =
-          "Facebook Login کامیاب ہو گیا! خوش آمدید " +
-          (user.displayName || "User");
-
-      } catch (error) {
-
-        console.error(error);
-
-        status.textContent =
-          "Login Error: " +
-          error.code +
-          " — " +
-          error.message;
       }
 
     });
 
   </script>
+
 </body>
 </html>
