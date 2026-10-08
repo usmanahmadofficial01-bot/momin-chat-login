@@ -22,6 +22,7 @@
 
   <p id="status">تیار ہے۔</p>
 
+
   <script type="module">
 
     import { initializeApp }
@@ -48,17 +49,18 @@
     };
 
 
-    // Firebase شروع
+    // Firebase شروع کریں
 
     const app = initializeApp(firebaseConfig);
 
     const auth = getAuth(app);
 
     const button = document.getElementById("facebookLogin");
+
     const status = document.getElementById("status");
 
 
-    // Facebook SDK تیار ہونے کا انتظار
+    // Facebook JavaScript SDK
 
     window.fbAsyncInit = function () {
 
@@ -66,30 +68,36 @@
         appId: "1400080655441962",
         cookie: true,
         xfbml: true,
-        version: "v23.0"
+        version: "v24.0"
       });
 
-      console.log("Facebook SDK تیار ہے.");
+      console.log("Facebook SDK تیار ہے۔");
 
     };
 
 
-    // Facebook Login Button
+    // Facebook Login
 
     button.addEventListener("click", function () {
 
-      status.textContent = "Facebook Login شروع ہو رہا ہے...";
+      status.textContent =
+        "Facebook Login شروع ہو رہا ہے...";
+
 
       if (typeof FB === "undefined") {
 
         status.textContent =
-          "Facebook SDK ابھی لوڈ نہیں ہوا۔ دوبارہ کوشش کریں۔";
+          "Facebook SDK ابھی لوڈ نہیں ہوا۔ براہِ کرم دوبارہ کوشش کریں۔";
 
         return;
+
       }
 
 
       FB.login(function(response) {
+
+        console.log("Facebook Response:", response);
+
 
         if (response.authResponse) {
 
@@ -101,13 +109,9 @@
             response.authResponse.accessToken;
 
 
-          // Facebook Access Token کو Firebase Credential میں تبدیل کریں
-
           const credential =
             FacebookAuthProvider.credential(accessToken);
 
-
-          // Firebase میں Sign In
 
           signInWithCredential(auth, credential)
 
@@ -115,17 +119,27 @@
 
               const user = result.user;
 
+
               status.textContent =
                 "Facebook Login کامیاب ہو گیا! خوش آمدید " +
                 (user.displayName || "User");
 
-              console.log("Firebase User:", user);
+
+              console.log(
+                "Firebase Login کامیاب:",
+                user.uid
+              );
 
             })
 
+
             .catch(function(error) {
 
-              console.error(error);
+              console.error(
+                "Firebase Error:",
+                error
+              );
+
 
               status.textContent =
                 "Firebase Login Error: " +
@@ -137,15 +151,19 @@
 
         }
 
+
         else {
 
           status.textContent =
-            "Facebook Login منسوخ کر دیا گیا۔";
+            "Facebook Login مکمل نہیں ہوا۔";
 
         }
 
+
       }, {
+
         scope: "public_profile,email"
+
       });
 
     });
