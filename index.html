@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Momin Chat</title>
 
   <script async defer crossorigin="anonymous"
@@ -34,6 +33,13 @@
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
 
     // Firebase Configuration
 
@@ -48,16 +54,20 @@
     };
 
 
-    // Firebase شروع کریں
+    // Firebase شروع
 
     const app = initializeApp(firebaseConfig);
+
     const auth = getAuth(app);
 
+    const db = getFirestore(app);
+
     const button = document.getElementById("facebookLogin");
+
     const status = document.getElementById("status");
 
 
-    // Facebook SDK تیار ہونے کے بعد
+    // Facebook SDK
 
     window.fbAsyncInit = function () {
 
@@ -67,8 +77,6 @@
         xfbml: true,
         version: "v24.0"
       });
-
-      console.log("Facebook SDK تیار ہے۔");
 
     };
 
@@ -87,14 +95,10 @@
           "Facebook SDK ابھی لوڈ نہیں ہوا۔ دوبارہ کوشش کریں۔";
 
         return;
-
       }
 
 
       FB.login(function(response) {
-
-        console.log("Facebook response:", response);
-
 
         if (!response.authResponse) {
 
@@ -102,7 +106,6 @@
             "Facebook Login مکمل نہیں ہوا۔";
 
           return;
-
         }
 
 
@@ -114,41 +117,46 @@
           response.authResponse.accessToken;
 
 
-        // Facebook Access Token کو Firebase Credential میں تبدیل کریں
-
         const credential =
           FacebookAuthProvider.credential(accessToken);
 
 
-        // Firebase میں لاگ اِن کریں
-
         signInWithCredential(auth, credential)
 
-          .then(function(result) {
+          .then(async function(result) {
 
             const user = result.user;
+
+
+            // صارف کی معلومات Firestore میں محفوظ کریں
+
+            await setDoc(
+              doc(db, "users", user.uid),
+              {
+                uid: user.uid,
+                name: user.displayName || "",
+                email: user.email || "",
+                photoURL: user.photoURL || "",
+                createdAt: serverTimestamp()
+              },
+              {
+                merge: true
+              }
+            );
+
 
             status.textContent =
               "Facebook Login کامیاب ہو گیا! خوش آمدید " +
               (user.displayName || "User");
 
-            console.log(
-              "Firebase User:",
-              user
-            );
-
           })
 
           .catch(function(error) {
 
-            console.error(
-              "Firebase Login Error:",
-              error
-            );
-
             status.textContent =
-              "Firebase Login Error: " +
-              error.code;
+              "Firebase Login Error: " + error.code;
+
+            console.error(error);
 
           });
 
@@ -161,7 +169,7 @@
     });
 
 
-    // Firebase Login State
+    // صارف پہلے سے لاگ اِن ہو تو
 
     onAuthStateChanged(auth, function(user) {
 
