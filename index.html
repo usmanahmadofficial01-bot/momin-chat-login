@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#075e54">
+<meta name="description" content="Private conversations with Momin Chat.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Momin Chat">
+<link rel="manifest" href="manifest.json">
 <title>Momin Chat</title>
 <style>
 *{box-sizing:border-box}
@@ -13,7 +19,9 @@ main{max-width:650px;margin:20px auto;padding:14px}
 button,input{width:100%;padding:12px;margin-top:9px;border-radius:8px;font-size:16px}
 button{border:0;color:white;background:#087f5b;cursor:pointer}
 button:disabled{opacity:.6}
-.google{background:#4285f4}.facebook{background:#1877f2}.secondary{background:#64748b}
+.google{background:#4285f4}
+.facebook{background:#1877f2}
+.secondary{background:#64748b}
 input{border:1px solid #cbd5e1}
 .small{font-size:13px;color:#64748b}
 .status{white-space:pre-wrap;overflow-wrap:anywhere;color:#b42318;font-size:14px}
@@ -25,35 +33,59 @@ input{border:1px solid #cbd5e1}
 </style>
 </head>
 <body>
-<header><h1>Momin Chat</h1><p>Private conversations, simply connected.</p></header>
+<header>
+<h1>Momin Chat</h1>
+<p>Private conversations, simply connected.</p>
+</header>
+
 <main>
 <section id="loginSection" class="card">
-<h2>Welcome to Momin Chat</h2><p>Sign in to continue.</p>
+<h2>Welcome to Momin Chat</h2>
+<p>Sign in to continue.</p>
 <button id="googleBtn" class="google">Continue with Google</button>
 <button id="facebookBtn" class="facebook">Continue with Facebook</button>
 <p id="status" class="status" role="status"></p>
 </section>
+
 <section id="appSection" hidden>
 <div class="card">
-<h2>Your Account</h2><p id="profileName"></p><p id="profileEmail" class="small"></p>
+<h2>Your Account</h2>
+<p id="profileName"></p>
+<p id="profileEmail" class="small"></p>
 <button id="signOutBtn" class="secondary">Sign Out</button>
 <p id="appStatus" class="status" role="status"></p>
 </div>
-<div class="card"><h2>People</h2><div id="usersList">Loading people...</div></div>
+
+<div class="card">
+<h2>People</h2>
+<div id="usersList">Loading people...</div>
+</div>
+
 <div class="card">
 <h2 id="chatTitle">Your Chat</h2>
 <div id="messages">Select a person to open a conversation.</div>
 <form id="messageForm">
-<input id="messageInput" maxlength="2000" placeholder="Write a message..." autocomplete="off" required>
+<input id="messageInput" maxlength="2000"
+placeholder="Write a message..." autocomplete="off" required>
 <button id="sendBtn" type="submit">Send Message</button>
 </form>
 </div>
 </section>
 </main>
+
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import {getAuth,GoogleAuthProvider,FacebookAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import {getFirestore,doc,setDoc,collection,query,orderBy,limit,onSnapshot,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import {
+getAuth,GoogleAuthProvider,FacebookAuthProvider,
+signInWithPopup,onAuthStateChanged,signOut
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+getFirestore,doc,setDoc,collection,query,orderBy,
+limit,onSnapshot,addDoc,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyBY2W7QQDQw1hwGYHcNhQbr1IUMxrz1SF8",
@@ -78,24 +110,39 @@ let activeChatId=null;
 
 function showError(target,error){
 console.error(error);
-$(target).textContent=(error?.code?error.code+": ":"")+(error?.message||"Something went wrong.");
+$(target).textContent=
+(error?.code?error.code+": ":"")+
+(error?.message||"Something went wrong.");
 }
 
 async function login(which){
 $("status").textContent="";
 $("googleBtn").disabled=true;
 $("facebookBtn").disabled=true;
+
 try{
-const provider=which==="google"?new GoogleAuthProvider():new FacebookAuthProvider();
+const provider=which==="google"
+?new GoogleAuthProvider()
+:new FacebookAuthProvider();
+
 await signInWithPopup(auth,provider);
-}catch(error){showError("status",error)}
-finally{$("googleBtn").disabled=false;$("facebookBtn").disabled=false}
+}catch(error){
+showError("status",error);
+}finally{
+$("googleBtn").disabled=false;
+$("facebookBtn").disabled=false;
 }
+}
+
 $("googleBtn").addEventListener("click",()=>login("google"));
 $("facebookBtn").addEventListener("click",()=>login("facebook"));
 
 $("signOutBtn").addEventListener("click",async()=>{
-try{await signOut(auth)}catch(error){showError("appStatus",error)}
+try{
+await signOut(auth);
+}catch(error){
+showError("appStatus",error);
+}
 });
 
 onAuthStateChanged(auth,async user=>{
@@ -104,9 +151,14 @@ $("loginSection").hidden=!!user;
 $("appSection").hidden=!user;
 $("status").textContent="";
 $("appStatus").textContent="";
+
 if(stopUsersListener)stopUsersListener();
 if(stopMessagesListener)stopMessagesListener();
-stopUsersListener=null;stopMessagesListener=null;selectedUser=null;activeChatId=null;
+
+stopUsersListener=null;
+stopMessagesListener=null;
+selectedUser=null;
+activeChatId=null;
 
 if(!user){
 $("usersList").textContent="";
@@ -114,8 +166,10 @@ $("messages").textContent="Sign in to start chatting.";
 $("chatTitle").textContent="Your Chat";
 return;
 }
+
 $("profileName").textContent=user.displayName||"Momin Chat User";
 $("profileEmail").textContent=user.email||"Email not shared by this provider";
+
 try{
 await setDoc(doc(db,"publicProfiles",user.uid),{
 uid:user.uid,
@@ -123,17 +177,34 @@ displayName:user.displayName||"Chat User",
 photoURL:user.photoURL||"",
 updatedAt:serverTimestamp()
 },{merge:true});
+
 loadUsers();
-}catch(error){showError("appStatus",error)}
+}catch(error){
+showError("appStatus",error);
+}
 });
 
 function loadUsers(){
 if(stopUsersListener)stopUsersListener();
-const usersQuery=query(collection(db,"publicProfiles"),limit(100));
+
+const usersQuery=query(
+collection(db,"publicProfiles"),
+limit(100)
+);
+
 stopUsersListener=onSnapshot(usersQuery,snapshot=>{
-const list=$("usersList");list.replaceChildren();
-const people=snapshot.docs.map(d=>d.data()).filter(p=>p.uid&&p.uid!==currentUser.uid);
-if(!people.length){list.textContent="No other users found yet.";return}
+const list=$("usersList");
+list.replaceChildren();
+
+const people=snapshot.docs
+.map(d=>d.data())
+.filter(p=>p.uid&&p.uid!==currentUser.uid);
+
+if(!people.length){
+list.textContent="No other users found yet.";
+return;
+}
+
 people.forEach(person=>{
 const item=document.createElement("div");
 item.className="user";
@@ -146,10 +217,13 @@ list.appendChild(item);
 
 async function openChat(person){
 if(!currentUser||!person.uid)return;
+
 selectedUser=person;
-$("chatTitle").textContent="Chat with "+(person.displayName||"Chat User");
+$("chatTitle").textContent=
+"Chat with "+(person.displayName||"Chat User");
 $("messages").textContent="Loading messages...";
 $("appStatus").textContent="";
+
 if(stopMessagesListener)stopMessagesListener();
 stopMessagesListener=null;
 
@@ -173,53 +247,95 @@ limit(100)
 
 stopMessagesListener=onSnapshot(messagesQuery,snapshot=>{
 if(activeChatId!==chatId)return;
-const box=$("messages");box.replaceChildren();
-if(snapshot.empty){box.textContent="No messages yet. Say hello!";return}
+
+const box=$("messages");
+box.replaceChildren();
+
+if(snapshot.empty){
+box.textContent="No messages yet. Say hello!";
+return;
+}
+
 snapshot.forEach(messageDoc=>{
 const data=messageDoc.data();
-const item=document.createElement("div");item.className="message";
+const item=document.createElement("div");
+item.className="message";
+
 const label=document.createElement("strong");
-label.textContent=(data.senderId===currentUser.uid?"You":(person.displayName||"User"))+": ";
-const content=document.createElement("span");content.textContent=data.text||"";
-item.append(label,content);box.appendChild(item);
+label.textContent=
+(data.senderId===currentUser.uid
+?"You"
+:(person.displayName||"User"))+": ";
+
+const content=document.createElement("span");
+content.textContent=data.text||"";
+
+item.append(label,content);
+box.appendChild(item);
 });
+
 box.scrollTop=box.scrollHeight;
 },error=>{
 showError("appStatus",error);
-$("messages").textContent="Could not load messages. See the error above.";
+$("messages").textContent=
+"Could not load messages. See the error above.";
 });
+
 }catch(error){
 showError("appStatus",error);
-$("messages").textContent="Could not open chat. See the error above.";
+$("messages").textContent=
+"Could not open chat. See the error above.";
 }
 }
 
 $("messageForm").addEventListener("submit",async event=>{
 event.preventDefault();
+
 if(!currentUser||!selectedUser){
-$("appStatus").textContent="Please select a person first.";return;
+$("appStatus").textContent="Please select a person first.";
+return;
 }
+
 const text=$("messageInput").value.trim();
 if(!text)return;
+
 $("sendBtn").disabled=true;
 $("appStatus").textContent="";
+
 try{
 const ids=[currentUser.uid,selectedUser.uid].sort();
 const chatId=ids.join("_");
+
 await setDoc(doc(db,"conversations",chatId),{
 participantIds:ids,
 createdAt:serverTimestamp()
 },{merge:true});
-await addDoc(collection(db,"conversations",chatId,"messages"),{
+
+await addDoc(
+collection(db,"conversations",chatId,"messages"),
+{
 senderId:currentUser.uid,
 receiverId:selectedUser.uid,
 text:text,
 createdAt:serverTimestamp()
-});
+}
+);
+
 $("messageInput").value="";
-}catch(error){showError("appStatus",error)}
-finally{$("sendBtn").disabled=false}
+}catch(error){
+showError("appStatus",error);
+}finally{
+$("sendBtn").disabled=false;
+}
 });
+
+// Register the service worker for the GitHub Pages app.
+if("serviceWorker" in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("service-worker.js")
+.catch(error=>console.error("Service worker registration failed:",error));
+});
+}
 </script>
 </body>
 </html>
