@@ -1,441 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Momin Chat</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #172033;
-    }
-
-    header {
-      background: #075e54;
-      color: white;
-      padding: 18px;
-      text-align: center;
-    }
-
-    main {
-      max-width: 650px;
-      margin: 24px auto;
-      padding: 16px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      margin-bottom: 16px;
-      box-shadow: 0 3px 12px #0000000d;
-    }
-
-    button, input {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      border: 0;
-      color: white;
-      background: #087f5b;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    .facebook { background: #1877f2; }
-    .google { background: #4285f4; }
-    .secondary { background: #64748b; }
-
-    input {
-      border: 1px solid #cbd5e1;
-      background: white;
-    }
-
-    #status {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      color: #b42318;
-      font-size: 14px;
-    }
-
-    .user {
-      padding: 12px;
-      margin-top: 8px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      cursor: pointer;
-      overflow-wrap: anywhere;
-    }
-
-    .user:hover { background: #f0fdf4; }
-
-    #messages {
-      height: 260px;
-      overflow-y: auto;
-      border: 1px solid #e2e8f0;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 12px;
-    }
-
-    .message {
-      background: #dcfce7;
-      padding: 10px;
-      border-radius: 8px;
-      margin: 8px 0;
-      overflow-wrap: anywhere;
-    }
-
-    .small {
-      color: #64748b;
-      font-size: 13px;
-    }
-
-    [hidden] { display: none !important; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Momin Chat</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#075e54;color:white;padding:16px;text-align:center}
+main{max-width:650px;margin:20px auto;padding:14px}
+.card{background:white;padding:18px;border-radius:14px;margin-bottom:15px;box-shadow:0 3px 12px #0000000d}
+button,input{width:100%;padding:12px;margin-top:9px;border-radius:8px;font-size:16px}
+button{border:0;color:white;background:#087f5b;cursor:pointer}
+button:disabled{opacity:.6}
+.google{background:#4285f4}.facebook{background:#1877f2}.secondary{background:#64748b}
+input{border:1px solid #cbd5e1}
+.small{font-size:13px;color:#64748b}
+.status{white-space:pre-wrap;overflow-wrap:anywhere;color:#b42318;font-size:14px}
+.user{padding:12px;margin-top:8px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer}
+.user:hover{background:#f0fdf4}
+#messages{min-height:130px;max-height:300px;overflow-y:auto;border:1px solid #e2e8f0;padding:10px;border-radius:8px;margin-top:12px}
+.message{background:#dcfce7;padding:10px;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+[hidden]{display:none!important}
+</style>
 </head>
-
 <body>
-  <header>
-    <h1>Momin Chat</h1>
-    <p>Private conversations, simply connected.</p>
-  </header>
+<header><h1>Momin Chat</h1><p>Private conversations, simply connected.</p></header>
+<main>
+<section id="loginSection" class="card">
+<h2>Welcome to Momin Chat</h2><p>Sign in to continue.</p>
+<button id="googleBtn" class="google">Continue with Google</button>
+<button id="facebookBtn" class="facebook">Continue with Facebook</button>
+<p id="status" class="status" role="status"></p>
+</section>
+<section id="appSection" hidden>
+<div class="card">
+<h2>Your Account</h2><p id="profileName"></p><p id="profileEmail" class="small"></p>
+<button id="signOutBtn" class="secondary">Sign Out</button>
+<p id="appStatus" class="status" role="status"></p>
+</div>
+<div class="card"><h2>People</h2><div id="usersList">Loading people...</div></div>
+<div class="card">
+<h2 id="chatTitle">Your Chat</h2>
+<div id="messages">Select a person to open a conversation.</div>
+<form id="messageForm">
+<input id="messageInput" maxlength="2000" placeholder="Write a message..." autocomplete="off" required>
+<button id="sendBtn" type="submit">Send Message</button>
+</form>
+</div>
+</section>
+</main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {getAuth,GoogleAuthProvider,FacebookAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import {getFirestore,doc,setDoc,collection,query,orderBy,limit,onSnapshot,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-  <main>
-    <section id="loginSection" class="card">
-      <h2>Welcome to Momin Chat</h2>
-      <p>Sign in to continue.</p>
+const firebaseConfig={
+apiKey:"AIzaSyBY2W7QQDQw1hwGYHcNhQbr1IUMxrz1SF8",
+authDomain:"momin-chat-74a0e.firebaseapp.com",
+projectId:"momin-chat-74a0e",
+storageBucket:"momin-chat-74a0e.firebasestorage.app",
+messagingSenderId:"1038313929500",
+appId:"1:1038313929500:web:a9f14d29ff6b58863fd8d9",
+measurementId:"G-QRYL7GM7LE"
+};
 
-      <button id="googleBtn" class="google">
-        Continue with Google
-      </button>
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
 
-      <button id="facebookBtn" class="facebook">
-        Continue with Facebook
-      </button>
+let currentUser=null;
+let selectedUser=null;
+let stopUsersListener=null;
+let stopMessagesListener=null;
+let activeChatId=null;
 
-      <p id="status" role="status"></p>
-    </section>
+function showError(target,error){
+console.error(error);
+$(target).textContent=(error?.code?error.code+": ":"")+(error?.message||"Something went wrong.");
+}
 
-    <section id="appSection" hidden>
-      <div class="card">
-        <h2>Your Account</h2>
-        <p id="profileName"></p>
-        <p id="profileEmail" class="small"></p>
-        <button id="signOutBtn" class="secondary">Sign Out</button>
-        <p id="appStatus" role="status"></p>
-      </div>
+async function login(which){
+$("status").textContent="";
+$("googleBtn").disabled=true;
+$("facebookBtn").disabled=true;
+try{
+const provider=which==="google"?new GoogleAuthProvider():new FacebookAuthProvider();
+await signInWithPopup(auth,provider);
+}catch(error){showError("status",error)}
+finally{$("googleBtn").disabled=false;$("facebookBtn").disabled=false}
+}
+$("googleBtn").addEventListener("click",()=>login("google"));
+$("facebookBtn").addEventListener("click",()=>login("facebook"));
 
-      <div class="card">
-        <h2>People</h2>
-        <p class="small">
-          Only profiles made visible by your app's database rules can appear here.
-        </p>
-        <div id="usersList">Loading people...</div>
-      </div>
+$("signOutBtn").addEventListener("click",async()=>{
+try{await signOut(auth)}catch(error){showError("appStatus",error)}
+});
 
-      <div class="card">
-        <h2 id="chatTitle">Your Chat</h2>
-        <div id="messages">Select a person to open a conversation.</div>
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+$("loginSection").hidden=!!user;
+$("appSection").hidden=!user;
+$("status").textContent="";
+$("appStatus").textContent="";
+if(stopUsersListener)stopUsersListener();
+if(stopMessagesListener)stopMessagesListener();
+stopUsersListener=null;stopMessagesListener=null;selectedUser=null;activeChatId=null;
 
-        <form id="messageForm">
-          <input
-            id="messageInput"
-            type="text"
-            maxlength="2000"
-            placeholder="Write a message..."
-            autocomplete="off"
-            required
-          >
-          <button id="sendBtn" type="submit">Send Message</button>
-        </form>
-      </div>
-    </section>
-  </main>
+if(!user){
+$("usersList").textContent="";
+$("messages").textContent="Sign in to start chatting.";
+$("chatTitle").textContent="Your Chat";
+return;
+}
+$("profileName").textContent=user.displayName||"Momin Chat User";
+$("profileEmail").textContent=user.email||"Email not shared by this provider";
+try{
+await setDoc(doc(db,"publicProfiles",user.uid),{
+uid:user.uid,
+displayName:user.displayName||"Chat User",
+photoURL:user.photoURL||"",
+updatedAt:serverTimestamp()
+},{merge:true});
+loadUsers();
+}catch(error){showError("appStatus",error)}
+});
 
-  <script type="module">
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+function loadUsers(){
+if(stopUsersListener)stopUsersListener();
+const usersQuery=query(collection(db,"publicProfiles"),limit(100));
+stopUsersListener=onSnapshot(usersQuery,snapshot=>{
+const list=$("usersList");list.replaceChildren();
+const people=snapshot.docs.map(d=>d.data()).filter(p=>p.uid&&p.uid!==currentUser.uid);
+if(!people.length){list.textContent="No other users found yet.";return}
+people.forEach(person=>{
+const item=document.createElement("div");
+item.className="user";
+item.textContent=person.displayName||"Chat User";
+item.addEventListener("click",()=>openChat(person));
+list.appendChild(item);
+});
+},error=>showError("appStatus",error));
+}
 
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      FacebookAuthProvider,
-      signInWithPopup,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+async function openChat(person){
+if(!currentUser||!person.uid)return;
+selectedUser=person;
+$("chatTitle").textContent="Chat with "+(person.displayName||"Chat User");
+$("messages").textContent="Loading messages...";
+$("appStatus").textContent="";
+if(stopMessagesListener)stopMessagesListener();
+stopMessagesListener=null;
 
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      collection,
-      query,
-      orderBy,
-      limit,
-      onSnapshot,
-      addDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+const ids=[currentUser.uid,person.uid].sort();
+const chatId=ids.join("_");
+activeChatId=chatId;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBY2W7QQDQw1hwGYHcNhQbr1IUMxrz1SF8",
-      authDomain: "momin-chat-74a0e.firebaseapp.com",
-      projectId: "momin-chat-74a0e",
-      storageBucket: "momin-chat-74a0e.firebasestorage.app",
-      messagingSenderId: "1038313929500",
-      appId: "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
-      measurementId: "G-QRYL7GM7LE"
-    };
+try{
+await setDoc(doc(db,"conversations",chatId),{
+participantIds:ids,
+createdAt:serverTimestamp()
+},{merge:true});
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+if(activeChatId!==chatId)return;
 
-    const $ = (id) => document.getElementById(id);
+const messagesQuery=query(
+collection(db,"conversations",chatId,"messages"),
+orderBy("createdAt","asc"),
+limit(100)
+);
 
-    let currentUser = null;
-    let selectedUser = null;
-    let stopUsersListener = null;
-    let stopMessagesListener = null;
+stopMessagesListener=onSnapshot(messagesQuery,snapshot=>{
+if(activeChatId!==chatId)return;
+const box=$("messages");box.replaceChildren();
+if(snapshot.empty){box.textContent="No messages yet. Say hello!";return}
+snapshot.forEach(messageDoc=>{
+const data=messageDoc.data();
+const item=document.createElement("div");item.className="message";
+const label=document.createElement("strong");
+label.textContent=(data.senderId===currentUser.uid?"You":(person.displayName||"User"))+": ";
+const content=document.createElement("span");content.textContent=data.text||"";
+item.append(label,content);box.appendChild(item);
+});
+box.scrollTop=box.scrollHeight;
+},error=>{
+showError("appStatus",error);
+$("messages").textContent="Could not load messages. See the error above.";
+});
+}catch(error){
+showError("appStatus",error);
+$("messages").textContent="Could not open chat. See the error above.";
+}
+}
 
-    function showError(target, error) {
-      console.error(error);
-      $(target).textContent =
-        error?.message || "Something went wrong. Please try again.";
-    }
-
-    function friendlyError(error) {
-      const messages = {
-        "auth/unauthorized-domain":
-          "This website domain is not authorized in Firebase Authentication.",
-        "auth/popup-closed-by-user":
-          "The sign-in window was closed before sign-in finished.",
-        "auth/account-exists-with-different-credential":
-          "This email is already linked to another sign-in method.",
-        "auth/operation-not-allowed":
-          "This sign-in provider is not enabled in Firebase Authentication.",
-        "auth/api-key-not-valid":
-          "Firebase rejected the API key. Check the Web API key and its restrictions."
-      };
-
-      return messages[error?.code] || error?.message ||
-        "Sign-in failed. Please try again.";
-    }
-
-    async function login(providerName) {
-      $("status").textContent = "";
-      $("googleBtn").disabled = true;
-      $("facebookBtn").disabled = true;
-
-      try {
-        const provider = providerName === "google"
-          ? new GoogleAuthProvider()
-          : new FacebookAuthProvider();
-
-        provider.setCustomParameters({});
-
-        await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.error(error);
-        $("status").textContent = friendlyError(error);
-      } finally {
-        $("googleBtn").disabled = false;
-        $("facebookBtn").disabled = false;
-      }
-    }
-
-    $("googleBtn").addEventListener("click", () => login("google"));
-    $("facebookBtn").addEventListener("click", () => login("facebook"));
-
-    $("signOutBtn").addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        showError("appStatus", error);
-      }
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-
-      $("loginSection").hidden = !!user;
-      $("appSection").hidden = !user;
-      $("status").textContent = "";
-      $("appStatus").textContent = "";
-
-      if (!user) {
-        selectedUser = null;
-
-        if (stopUsersListener) stopUsersListener();
-        if (stopMessagesListener) stopMessagesListener();
-
-        stopUsersListener = null;
-        stopMessagesListener = null;
-        $("usersList").textContent = "";
-        $("messages").textContent = "Sign in to start chatting.";
-        $("chatTitle").textContent = "Your Chat";
-        return;
-      }
-
-      $("profileName").textContent =
-        user.displayName || "Momin Chat User";
-
-      $("profileEmail").textContent =
-        user.email || "Email not shared by this provider";
-
-      try {
-        // Store only basic public profile details, not email or phone.
-        await setDoc(doc(db, "publicProfiles", user.uid), {
-          uid: user.uid,
-          displayName: user.displayName || "Chat User",
-          photoURL: user.photoURL || "",
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-
-        loadUsers();
-      } catch (error) {
-        showError("appStatus", error);
-      }
-    });
-
-    function loadUsers() {
-      if (stopUsersListener) stopUsersListener();
-
-      const usersQuery = query(
-        collection(db, "publicProfiles"),
-        limit(100)
-      );
-
-      stopUsersListener = onSnapshot(usersQuery, (snapshot) => {
-        const list = $("usersList");
-        list.replaceChildren();
-
-        const people = snapshot.docs
-          .map((item) => item.data())
-          .filter((person) => person.uid !== currentUser.uid);
-
-        if (people.length === 0) {
-          list.textContent = "No other users found yet.";
-          return;
-        }
-
-        people.forEach((person) => {
-          const item = document.createElement("div");
-          item.className = "user";
-          item.textContent = person.displayName || "Chat User";
-          item.addEventListener("click", () => openChat(person));
-          list.appendChild(item);
-        });
-      }, (error) => {
-        showError("appStatus", error);
-      });
-    }
-
-    function openChat(person) {
-      if (!currentUser || !person.uid) return;
-
-      selectedUser = person;
-      $("chatTitle").textContent =
-        "Chat with " + (person.displayName || "Chat User");
-      $("messages").textContent = "Loading messages...";
-
-      if (stopMessagesListener) stopMessagesListener();
-
-      const ids = [currentUser.uid, person.uid].sort();
-      const chatId = ids.join("_");
-
-      const messagesQuery = query(
-        collection(db, "conversations", chatId, "messages"),
-        orderBy("createdAt", "asc"),
-        limit(100)
-      );
-
-      stopMessagesListener = onSnapshot(messagesQuery, (snapshot) => {
-        const box = $("messages");
-        box.replaceChildren();
-
-        if (snapshot.empty) {
-          box.textContent = "No messages yet. Say hello!";
-          return;
-        }
-
-        snapshot.forEach((messageDoc) => {
-          const data = messageDoc.data();
-          const item = document.createElement("div");
-          item.className = "message";
-
-          const sender = data.senderId === currentUser.uid
-            ? "You"
-            : (person.displayName || "User");
-
-          const label = document.createElement("strong");
-          label.textContent = sender + ": ";
-
-          const content = document.createElement("span");
-          content.textContent = data.text || "";
-
-          item.append(label, content);
-          box.appendChild(item);
-        });
-
-        box.scrollTop = box.scrollHeight;
-      }, (error) => {
-        showError("appStatus", error);
-      });
-    }
-
-    $("messageForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      if (!currentUser || !selectedUser) {
-        $("appStatus").textContent =
-          "Please select a person before sending a message.";
-        return;
-      }
-
-      const text = $("messageInput").value.trim();
-      if (!text) return;
-
-      $("sendBtn").disabled = true;
-      $("appStatus").textContent = "";
-
-      try {
-        const ids = [currentUser.uid, selectedUser.uid].sort();
-        const chatId = ids.join("_");
-
-        await addDoc(
-          collection(db, "conversations", chatId, "messages"),
-          {
-            senderId: currentUser.uid,
-            recipientId: selectedUser.uid,
-            text,
-            createdAt: serverTimestamp()
-          }
-        );
-
-        $("messageInput").value = "";
-      } catch (error) {
-        showError("appStatus", error);
-      } finally {
-        $("sendBtn").disabled = false;
-      }
-    });
-  </script>
+$("messageForm").addEventListener("submit",async event=>{
+event.preventDefault();
+if(!currentUser||!selectedUser){
+$("appStatus").textContent="Please select a person first.";return;
+}
+const text=$("messageInput").value.trim();
+if(!text)return;
+$("sendBtn").disabled=true;
+$("appStatus").textContent="";
+try{
+const ids=[currentUser.uid,selectedUser.uid].sort();
+const chatId=ids.join("_");
+await setDoc(doc(db,"conversations",chatId),{
+participantIds:ids,
+createdAt:serverTimestamp()
+},{merge:true});
+await addDoc(collection(db,"conversations",chatId,"messages"),{
+senderId:currentUser.uid,
+receiverId:selectedUser.uid,
+text:text,
+createdAt:serverTimestamp()
+});
+$("messageInput").value="";
+}catch(error){showError("appStatus",error)}
+finally{$("sendBtn").disabled=false}
+});
+</script>
 </body>
 </html>
