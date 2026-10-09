@@ -6,1383 +6,436 @@
   <title>Momin Chat</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f1f5f9;
-      color: #111827;
+      color: #172033;
     }
 
-    .app {
-      max-width: 600px;
-      min-height: 100vh;
-      margin: auto;
-      background: white;
-    }
-
-    .header {
-      background: #16a34a;
+    header {
+      background: #075e54;
       color: white;
       padding: 18px;
       text-align: center;
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 23px;
+    main {
+      max-width: 650px;
+      margin: 24px auto;
+      padding: 16px;
     }
 
-    .header p {
-      margin: 6px 0 0;
-      font-size: 13px;
-    }
-
-    .screen {
+    .card {
+      background: white;
       padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px #0000000d;
     }
 
-    .center {
-      text-align: center;
-      padding-top: 45px;
+    button, input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
     }
 
     button {
       border: 0;
-      border-radius: 8px;
-      padding: 13px 18px;
-      font-size: 15px;
+      color: white;
+      background: #087f5b;
       cursor: pointer;
     }
 
-    .facebook-btn {
-      width: 100%;
-      margin-top: 20px;
-      background: #1877f2;
-      color: white;
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
     }
 
-    .logout-btn {
-      width: 100%;
-      margin-top: 20px;
-      background: #ef4444;
-      color: white;
-    }
+    .facebook { background: #1877f2; }
+    .google { background: #4285f4; }
+    .secondary { background: #64748b; }
 
-    .search-box {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 15px;
-      margin-bottom: 15px;
-    }
-
-    .user-card {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid #e5e7eb;
-      cursor: pointer;
-    }
-
-    .avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 12px;
-      background: #d1d5db;
-    }
-
-    .user-name {
-      font-weight: bold;
-    }
-
-    .online {
-      color: #16a34a;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .offline {
-      color: #6b7280;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .profile {
-      text-align: center;
-      padding: 20px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .profile img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .status {
-      color: #16a34a;
-      font-size: 13px;
-      margin-top: 8px;
-    }
-
-    .error {
-      color: #dc2626;
-      margin-top: 15px;
-      font-size: 13px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .chat-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      background: #16a34a;
-      color: white;
-    }
-
-    .back-btn {
-      background: transparent;
-      color: white;
-      font-size: 22px;
-      padding: 5px 10px;
-    }
-
-    .chat-name {
-      font-weight: bold;
-    }
-
-    .messages {
-      height: calc(100vh - 210px);
-      min-height: 400px;
-      overflow-y: auto;
-      padding: 15px;
-      background: #efeae2;
-    }
-
-    .message-row {
-      display: flex;
-      margin-bottom: 8px;
-    }
-
-    .mine {
-      justify-content: flex-end;
-    }
-
-    .message {
-      max-width: 78%;
-      padding: 9px 11px;
-      border-radius: 9px;
-      font-size: 14px;
-      word-wrap: break-word;
-    }
-
-    .mine .message {
-      background: #d9fdd3;
-    }
-
-    .theirs .message {
+    input {
+      border: 1px solid #cbd5e1;
       background: white;
     }
 
-    .message-time {
-      font-size: 10px;
-      color: #6b7280;
-      text-align: right;
-      margin-top: 4px;
+    #status {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #b42318;
+      font-size: 14px;
     }
 
-    .blue {
-      color: #2563eb;
-    }
-
-    .send-area {
-      display: flex;
-      gap: 8px;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-    }
-
-    .message-input {
-      flex: 1;
+    .user {
       padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 20px;
-      outline: none;
+      margin-top: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      overflow-wrap: anywhere;
     }
 
-    .send-btn {
-      background: #16a34a;
-      color: white;
-      border-radius: 20px;
+    .user:hover { background: #f0fdf4; }
+
+    #messages {
+      height: 260px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 12px;
     }
+
+    .message {
+      background: #dcfce7;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 8px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .small {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    [hidden] { display: none !important; }
   </style>
 </head>
 
 <body>
-
-<div class="app">
-
-  <div class="header">
+  <header>
     <h1>Momin Chat</h1>
-    <p>Private messaging</p>
-  </div>
+    <p>Private conversations, simply connected.</p>
+  </header>
 
-  <div id="loginScreen" class="screen center">
+  <main>
+    <section id="loginSection" class="card">
+      <h2>Welcome to Momin Chat</h2>
+      <p>Sign in to continue.</p>
 
-    <h2>Welcome to Momin Chat</h2>
+      <button id="googleBtn" class="google">
+        Continue with Google
+      </button>
 
-    <p>Sign in securely to start chatting.</p>
+      <button id="facebookBtn" class="facebook">
+        Continue with Facebook
+      </button>
 
-    <button id="facebookLogin" class="facebook-btn">
-      Continue with Facebook
-    </button>
+      <p id="status" role="status"></p>
+    </section>
 
-    <div id="loginError" class="error"></div>
-
-  </div>
-
-
-  <div id="homeScreen" class="hidden">
-
-    <div class="profile">
-
-      <img id="myPhoto" src="" alt="Profile">
-
-      <h3 id="myName"></h3>
-
-      <div class="status">
-        Online
+    <section id="appSection" hidden>
+      <div class="card">
+        <h2>Your Account</h2>
+        <p id="profileName"></p>
+        <p id="profileEmail" class="small"></p>
+        <button id="signOutBtn" class="secondary">Sign Out</button>
+        <p id="appStatus" role="status"></p>
       </div>
 
-    </div>
-
-
-    <div class="screen">
-
-      <input
-        id="searchInput"
-        class="search-box"
-        type="text"
-        placeholder="Search users..."
-      >
-
-      <div id="usersList"></div>
-
-      <button id="logoutButton" class="logout-btn">
-        Sign Out
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <div id="chatScreen" class="hidden">
-
-    <div class="chat-header">
-
-      <button id="backButton" class="back-btn">
-        ←
-      </button>
-
-      <img
-        id="chatPhoto"
-        class="avatar"
-        src=""
-        alt="Profile"
-      >
-
-      <div>
-        <div id="chatName" class="chat-name"></div>
-        <div id="chatStatus"></div>
+      <div class="card">
+        <h2>People</h2>
+        <p class="small">
+          Only profiles made visible by your app's database rules can appear here.
+        </p>
+        <div id="usersList">Loading people...</div>
       </div>
 
-    </div>
+      <div class="card">
+        <h2 id="chatTitle">Your Chat</h2>
+        <div id="messages">Select a person to open a conversation.</div>
 
+        <form id="messageForm">
+          <input
+            id="messageInput"
+            type="text"
+            maxlength="2000"
+            placeholder="Write a message..."
+            autocomplete="off"
+            required
+          >
+          <button id="sendBtn" type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+  </main>
 
-    <div id="messages" class="messages"></div>
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      FacebookAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-    <div class="send-area">
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      collection,
+      query,
+      orderBy,
+      limit,
+      onSnapshot,
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-      <input
-        id="messageInput"
-        class="message-input"
-        type="text"
-        placeholder="Type a message..."
-      >
+    const firebaseConfig = {
+      apiKey: "AIzaSyBY2W7QQDQw1hwGYHcNhQbr1IUMxrz1SF8",
+      authDomain: "momin-chat-74a0e.firebaseapp.com",
+      projectId: "momin-chat-74a0e",
+      storageBucket: "momin-chat-74a0e.firebasestorage.app",
+      messagingSenderId: "1038313929500",
+      appId: "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
+      measurementId: "G-QRYL7GM7LE"
+    };
 
-      <button id="sendButton" class="send-btn">
-        Send
-      </button>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    </div>
+    const $ = (id) => document.getElementById(id);
 
-  </div>
+    let currentUser = null;
+    let selectedUser = null;
+    let stopUsersListener = null;
+    let stopMessagesListener = null;
 
-</div>
+    function showError(target, error) {
+      console.error(error);
+      $(target).textContent =
+        error?.message || "Something went wrong. Please try again.";
+    }
 
+    function friendlyError(error) {
+      const messages = {
+        "auth/unauthorized-domain":
+          "This website domain is not authorized in Firebase Authentication.",
+        "auth/popup-closed-by-user":
+          "The sign-in window was closed before sign-in finished.",
+        "auth/account-exists-with-different-credential":
+          "This email is already linked to another sign-in method.",
+        "auth/operation-not-allowed":
+          "This sign-in provider is not enabled in Firebase Authentication.",
+        "auth/api-key-not-valid":
+          "Firebase rejected the API key. Check the Web API key and its restrictions."
+      };
 
-<script type="module">
+      return messages[error?.code] || error?.message ||
+        "Sign-in failed. Please try again.";
+    }
 
-  import {
-    initializeApp
-  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-
-
-  import {
-    getAuth,
-    FacebookAuthProvider,
-    signInWithRedirect,
-    getRedirectResult,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
-
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    addDoc,
-    onSnapshot,
-    updateDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-
-  const firebaseConfig = {
-
-    apiKey:
-      "AIzaSyAtQTsqYdD97pD4bOhMmD37yY8Q-zyDUfE",
-
-    authDomain:
-      "momin-chat-74a0e.firebaseapp.com",
-
-    projectId:
-      "momin-chat-74a0e",
-
-    storageBucket:
-      "momin-chat-74a0e.firebasestorage.app",
-
-    messagingSenderId:
-      "1038313929500",
-
-    appId:
-      "1:1038313929500:web:a9f14d29ff6b58863fd8d9",
-
-    measurementId:
-      "G-QRYL7GM7LE"
-  };
-
-
-  const app =
-    initializeApp(firebaseConfig);
-
-
-  const auth =
-    getAuth(app);
-
-
-  const db =
-    getFirestore(app);
-
-
-  const provider =
-    new FacebookAuthProvider();
-
-
-  provider.addScope("email");
-
-
-  let currentUser = null;
-
-  let currentChatUser = null;
-
-  let unsubscribeMessages = null;
-
-
-  const loginScreen =
-    document.getElementById("loginScreen");
-
-  const homeScreen =
-    document.getElementById("homeScreen");
-
-  const chatScreen =
-    document.getElementById("chatScreen");
-
-  const loginButton =
-    document.getElementById("facebookLogin");
-
-  const loginError =
-    document.getElementById("loginError");
-
-  const usersList =
-    document.getElementById("usersList");
-
-  const searchInput =
-    document.getElementById("searchInput");
-
-  const myPhoto =
-    document.getElementById("myPhoto");
-
-  const myName =
-    document.getElementById("myName");
-
-  const logoutButton =
-    document.getElementById("logoutButton");
-
-  const messages =
-    document.getElementById("messages");
-
-  const messageInput =
-    document.getElementById("messageInput");
-
-  const sendButton =
-    document.getElementById("sendButton");
-
-
-  /*
-    Facebook Login
-  */
-
-  loginButton.addEventListener(
-    "click",
-    async () => {
-
-      loginError.textContent =
-        "Connecting to Facebook...";
-
-      loginButton.disabled = true;
+    async function login(providerName) {
+      $("status").textContent = "";
+      $("googleBtn").disabled = true;
+      $("facebookBtn").disabled = true;
 
       try {
+        const provider = providerName === "google"
+          ? new GoogleAuthProvider()
+          : new FacebookAuthProvider();
 
-        await signInWithRedirect(
-          auth,
-          provider
-        );
+        provider.setCustomParameters({});
 
+        await signInWithPopup(auth, provider);
       } catch (error) {
-
         console.error(error);
+        $("status").textContent = friendlyError(error);
+      } finally {
+        $("googleBtn").disabled = false;
+        $("facebookBtn").disabled = false;
+      }
+    }
 
-        loginButton.disabled = false;
+    $("googleBtn").addEventListener("click", () => login("google"));
+    $("facebookBtn").addEventListener("click", () => login("facebook"));
 
-        loginError.textContent =
-          error.message;
+    $("signOutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        showError("appStatus", error);
+      }
+    });
 
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+
+      $("loginSection").hidden = !!user;
+      $("appSection").hidden = !user;
+      $("status").textContent = "";
+      $("appStatus").textContent = "";
+
+      if (!user) {
+        selectedUser = null;
+
+        if (stopUsersListener) stopUsersListener();
+        if (stopMessagesListener) stopMessagesListener();
+
+        stopUsersListener = null;
+        stopMessagesListener = null;
+        $("usersList").textContent = "";
+        $("messages").textContent = "Sign in to start chatting.";
+        $("chatTitle").textContent = "Your Chat";
+        return;
       }
 
-    }
-  );
+      $("profileName").textContent =
+        user.displayName || "Momin Chat User";
 
+      $("profileEmail").textContent =
+        user.email || "Email not shared by this provider";
 
-  /*
-    Complete Facebook Redirect
-  */
-
-  try {
-
-    await getRedirectResult(auth);
-
-  } catch (error) {
-
-    console.error(error);
-
-    loginError.textContent =
-      "Facebook Login failed: " +
-      error.message;
-
-    loginButton.disabled = false;
-  }
-
-
-  /*
-    Save User
-  */
-
-  async function saveUser(user) {
-
-    const privateRef =
-      doc(
-        db,
-        "users",
-        user.uid
-      );
-
-
-    const privateSnapshot =
-      await getDoc(privateRef);
-
-
-    if (!privateSnapshot.exists()) {
-
-      await setDoc(
-        privateRef,
-        {
+      try {
+        // Store only basic public profile details, not email or phone.
+        await setDoc(doc(db, "publicProfiles", user.uid), {
           uid: user.uid,
-          name: user.displayName || "User",
-          email: user.email || "",
+          displayName: user.displayName || "Chat User",
           photoURL: user.photoURL || "",
-          createdAt: serverTimestamp()
-        }
-      );
-
-    } else {
-
-      await setDoc(
-        privateRef,
-        {
-          name: user.displayName || "User",
-          email: user.email || "",
-          photoURL: user.photoURL || ""
-        },
-        {
-          merge: true
-        }
-      );
-
-    }
-
-
-    const publicRef =
-      doc(
-        db,
-        "publicProfiles",
-        user.uid
-      );
-
-
-    await setDoc(
-      publicRef,
-      {
-        uid: user.uid,
-        name: user.displayName || "User",
-        photoURL: user.photoURL || "",
-        online: true,
-        lastSeen: serverTimestamp()
-      },
-      {
-        merge: true
-      }
-    );
-
-  }
-
-
-  /*
-    Authentication State
-  */
-
-  onAuthStateChanged(
-    auth,
-    async (user) => {
-
-      if (user) {
-
-        currentUser = user;
-
-        try {
-
-          await saveUser(user);
-
-        } catch (error) {
-
-          console.error(error);
-
-        }
-
-
-        loginScreen.classList.add("hidden");
-
-        chatScreen.classList.add("hidden");
-
-        homeScreen.classList.remove("hidden");
-
-
-        myName.textContent =
-          user.displayName || "User";
-
-
-        myPhoto.src =
-          user.photoURL ||
-          "https://via.placeholder.com/80";
-
-
-        await loadUsers();
-
-      } else {
-
-        currentUser = null;
-
-        loginScreen.classList.remove("hidden");
-
-        homeScreen.classList.add("hidden");
-
-        chatScreen.classList.add("hidden");
-
-        loginButton.disabled = false;
-
-      }
-
-    }
-  );
-
-
-  /*
-    Load Users
-  */
-
-  async function loadUsers(
-    searchText = ""
-  ) {
-
-    usersList.innerHTML =
-      "<p>Loading users...</p>";
-
-
-    try {
-
-      const snapshot =
-        await getDocs(
-          collection(
-            db,
-            "publicProfiles"
-          )
-        );
-
-
-      usersList.innerHTML = "";
-
-
-      let found = 0;
-
-
-      snapshot.forEach(
-        (docSnap) => {
-
-          const user =
-            docSnap.data();
-
-
-          if (
-            !currentUser ||
-            user.uid === currentUser.uid
-          ) {
-
-            return;
-
-          }
-
-
-          const name =
-            (
-              user.name || "User"
-            ).toLowerCase();
-
-
-          if (
-            searchText &&
-            !name.includes(
-              searchText.toLowerCase()
-            )
-          ) {
-
-            return;
-
-          }
-
-
-          found++;
-
-
-          const card =
-            document.createElement("div");
-
-
-          card.className =
-            "user-card";
-
-
-          card.innerHTML = `
-
-            <img
-              class="avatar"
-              src="${
-                user.photoURL ||
-                "https://via.placeholder.com/45"
-              }"
-              alt="Profile"
-            >
-
-            <div>
-
-              <div class="user-name">
-                ${escapeHtml(
-                  user.name || "User"
-                )}
-              </div>
-
-              <div class="${
-                user.online
-                  ? "online"
-                  : "offline"
-              }">
-
-                ${
-                  user.online
-                    ? "Online"
-                    : "Offline"
-                }
-
-              </div>
-
-            </div>
-
-          `;
-
-
-          card.addEventListener(
-            "click",
-            () => openChat(user)
-          );
-
-
-          usersList.appendChild(card);
-
-        }
-      );
-
-
-      if (found === 0) {
-
-        usersList.innerHTML =
-          "<p>No users found.</p>";
-
-      }
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      usersList.innerHTML =
-        "<p>Unable to load users.</p>";
-
-    }
-
-  }
-
-
-  searchInput.addEventListener(
-    "input",
-    () => {
-
-      loadUsers(
-        searchInput.value.trim()
-      );
-
-    }
-  );
-
-
-  /*
-    Open Chat
-  */
-
-  async function openChat(user) {
-
-    currentChatUser = user;
-
-
-    homeScreen.classList.add("hidden");
-
-    chatScreen.classList.remove("hidden");
-
-
-    document.getElementById(
-      "chatName"
-    ).textContent =
-      user.name || "User";
-
-
-    document.getElementById(
-      "chatPhoto"
-    ).src =
-      user.photoURL ||
-      "https://via.placeholder.com/45";
-
-
-    document.getElementById(
-      "chatStatus"
-    ).textContent =
-      user.online
-        ? "Online"
-        : "Offline";
-
-
-    await loadMessages();
-
-  }
-
-
-  /*
-    Conversation ID
-  */
-
-  function getConversationId(
-    uid1,
-    uid2
-  ) {
-
-    return [
-      uid1,
-      uid2
-    ]
-      .sort()
-      .join("_");
-
-  }
-
-
-  /*
-    Load Messages
-  */
-
-  async function loadMessages() {
-
-    if (
-      !currentUser ||
-      !currentChatUser
-    ) {
-
-      return;
-
-    }
-
-
-    if (unsubscribeMessages) {
-
-      unsubscribeMessages();
-
-      unsubscribeMessages = null;
-
-    }
-
-
-    const conversationId =
-      getConversationId(
-        currentUser.uid,
-        currentChatUser.uid
-      );
-
-
-    const conversationRef =
-      doc(
-        db,
-        "conversations",
-        conversationId
-      );
-
-
-    const conversationSnapshot =
-      await getDoc(
-        conversationRef
-      );
-
-
-    if (
-      !conversationSnapshot.exists()
-    ) {
-
-      await setDoc(
-        conversationRef,
-        {
-          participantIds: [
-            currentUser.uid,
-            currentChatUser.uid
-          ],
-          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
-        }
+        }, { merge: true });
+
+        loadUsers();
+      } catch (error) {
+        showError("appStatus", error);
+      }
+    });
+
+    function loadUsers() {
+      if (stopUsersListener) stopUsersListener();
+
+      const usersQuery = query(
+        collection(db, "publicProfiles"),
+        limit(100)
       );
 
+      stopUsersListener = onSnapshot(usersQuery, (snapshot) => {
+        const list = $("usersList");
+        list.replaceChildren();
+
+        const people = snapshot.docs
+          .map((item) => item.data())
+          .filter((person) => person.uid !== currentUser.uid);
+
+        if (people.length === 0) {
+          list.textContent = "No other users found yet.";
+          return;
+        }
+
+        people.forEach((person) => {
+          const item = document.createElement("div");
+          item.className = "user";
+          item.textContent = person.displayName || "Chat User";
+          item.addEventListener("click", () => openChat(person));
+          list.appendChild(item);
+        });
+      }, (error) => {
+        showError("appStatus", error);
+      });
     }
 
+    function openChat(person) {
+      if (!currentUser || !person.uid) return;
 
-    const messagesRef =
-      collection(
-        db,
-        "conversations",
-        conversationId,
-        "messages"
+      selectedUser = person;
+      $("chatTitle").textContent =
+        "Chat with " + (person.displayName || "Chat User");
+      $("messages").textContent = "Loading messages...";
+
+      if (stopMessagesListener) stopMessagesListener();
+
+      const ids = [currentUser.uid, person.uid].sort();
+      const chatId = ids.join("_");
+
+      const messagesQuery = query(
+        collection(db, "conversations", chatId, "messages"),
+        orderBy("createdAt", "asc"),
+        limit(100)
       );
 
+      stopMessagesListener = onSnapshot(messagesQuery, (snapshot) => {
+        const box = $("messages");
+        box.replaceChildren();
 
-    const messagesQuery =
-      query(
-        messagesRef,
-        orderBy(
-          "createdAt",
-          "asc"
-        )
-      );
-
-
-    unsubscribeMessages =
-      onSnapshot(
-        messagesQuery,
-        (snapshot) => {
-
-          messages.innerHTML = "";
-
-
-          snapshot.forEach(
-            (messageDoc) => {
-
-              displayMessage(
-                messageDoc.id,
-                messageDoc.data()
-              );
-
-            }
-          );
-
-
-          messages.scrollTop =
-            messages.scrollHeight;
-
-        },
-        (error) => {
-
-          console.error(error);
-
-          messages.innerHTML =
-            "<p>Unable to load messages.</p>";
-
+        if (snapshot.empty) {
+          box.textContent = "No messages yet. Say hello!";
+          return;
         }
-      );
 
-  }
+        snapshot.forEach((messageDoc) => {
+          const data = messageDoc.data();
+          const item = document.createElement("div");
+          item.className = "message";
 
+          const sender = data.senderId === currentUser.uid
+            ? "You"
+            : (person.displayName || "User");
 
-  /*
-    Display Message
-  */
+          const label = document.createElement("strong");
+          label.textContent = sender + ": ";
 
-  function displayMessage(
-    id,
-    data
-  ) {
+          const content = document.createElement("span");
+          content.textContent = data.text || "";
 
-    const row =
-      document.createElement("div");
+          item.append(label, content);
+          box.appendChild(item);
+        });
 
-
-    const mine =
-      data.senderId ===
-      currentUser.uid;
-
-
-    row.className =
-      "message-row " +
-      (
-        mine
-          ? "mine"
-          : "theirs"
-      );
-
-
-    const bubble =
-      document.createElement("div");
-
-
-    bubble.className =
-      "message";
-
-
-    const text =
-      document.createElement("div");
-
-
-    text.textContent =
-      data.text || "";
-
-
-    const time =
-      document.createElement("div");
-
-
-    time.className =
-      "message-time";
-
-
-    let timeText = "";
-
-
-    if (data.createdAt) {
-
-      const date =
-        data.createdAt.toDate();
-
-
-      timeText =
-        date.toLocaleTimeString(
-          [],
-          {
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
-
+        box.scrollTop = box.scrollHeight;
+      }, (error) => {
+        showError("appStatus", error);
+      });
     }
 
+    $("messageForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-    let ticks = "";
-
-
-    if (mine) {
-
-      if (data.read) {
-
-        ticks =
-          '<span class="blue">✓✓</span>';
-
-      } else if (
-        data.delivered
-      ) {
-
-        ticks =
-          "<span>✓✓</span>";
-
-      } else {
-
-        ticks =
-          "<span>✓</span>";
-
+      if (!currentUser || !selectedUser) {
+        $("appStatus").textContent =
+          "Please select a person before sending a message.";
+        return;
       }
 
-    }
+      const text = $("messageInput").value.trim();
+      if (!text) return;
 
+      $("sendBtn").disabled = true;
+      $("appStatus").textContent = "";
 
-    time.innerHTML =
-      timeText +
-      " " +
-      ticks;
+      try {
+        const ids = [currentUser.uid, selectedUser.uid].sort();
+        const chatId = ids.join("_");
 
-
-    bubble.appendChild(text);
-
-    bubble.appendChild(time);
-
-    row.appendChild(bubble);
-
-    messages.appendChild(row);
-
-
-    if (
-      !mine &&
-      !data.read
-    ) {
-
-      const conversationId =
-        getConversationId(
-          currentUser.uid,
-          currentChatUser.uid
-        );
-
-
-      const messageRef =
-        doc(
-          db,
-          "conversations",
-          conversationId,
-          "messages",
-          id
-        );
-
-
-      updateDoc(
-        messageRef,
-        {
-          delivered: true,
-          read: true
-        }
-      ).catch(() => {});
-
-    }
-
-  }
-
-
-  /*
-    Send Message
-  */
-
-  async function sendMessage() {
-
-    const text =
-      messageInput.value.trim();
-
-
-    if (
-      !text ||
-      !currentUser ||
-      !currentChatUser
-    ) {
-
-      return;
-
-    }
-
-
-    const conversationId =
-      getConversationId(
-        currentUser.uid,
-        currentChatUser.uid
-      );
-
-
-    try {
-
-      await addDoc(
-        collection(
-          db,
-          "conversations",
-          conversationId,
-          "messages"
-        ),
-        {
-          senderId:
-            currentUser.uid,
-
-          receiverId:
-            currentChatUser.uid,
-
-          text:
+        await addDoc(
+          collection(db, "conversations", chatId, "messages"),
+          {
+            senderId: currentUser.uid,
+            recipientId: selectedUser.uid,
             text,
-
-          delivered:
-            false,
-
-          read:
-            false,
-
-          createdAt:
-            serverTimestamp()
-        }
-      );
-
-
-      await updateDoc(
-        doc(
-          db,
-          "conversations",
-          conversationId
-        ),
-        {
-          updatedAt:
-            serverTimestamp()
-        }
-      );
-
-
-      messageInput.value = "";
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Message could not be sent: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  sendButton.addEventListener(
-    "click",
-    sendMessage
-  );
-
-
-  messageInput.addEventListener(
-    "keydown",
-    (event) => {
-
-      if (
-        event.key === "Enter"
-      ) {
-
-        sendMessage();
-
-      }
-
-    }
-  );
-
-
-  /*
-    Back Button
-  */
-
-  document
-    .getElementById("backButton")
-    .addEventListener(
-      "click",
-      () => {
-
-        if (
-          unsubscribeMessages
-        ) {
-
-          unsubscribeMessages();
-
-          unsubscribeMessages =
-            null;
-
-        }
-
-
-        currentChatUser = null;
-
-
-        chatScreen.classList.add(
-          "hidden"
-        );
-
-        homeScreen.classList.remove(
-          "hidden"
-        );
-
-
-        loadUsers(
-          searchInput.value.trim()
-        );
-
-      }
-    );
-
-
-  /*
-    Sign Out
-  */
-
-  logoutButton.addEventListener(
-    "click",
-    async () => {
-
-      if (currentUser) {
-
-        await setDoc(
-          doc(
-            db,
-            "publicProfiles",
-            currentUser.uid
-          ),
-          {
-            online: false,
-            lastSeen:
-              serverTimestamp()
-          },
-          {
-            merge: true
+            createdAt: serverTimestamp()
           }
         );
 
+        $("messageInput").value = "";
+      } catch (error) {
+        showError("appStatus", error);
+      } finally {
+        $("sendBtn").disabled = false;
       }
-
-
-      await signOut(auth);
-
-    }
-  );
-
-
-  /*
-    Online heartbeat
-  */
-
-  setInterval(
-    async () => {
-
-      if (currentUser) {
-
-        await setDoc(
-          doc(
-            db,
-            "publicProfiles",
-            currentUser.uid
-          ),
-          {
-            online: true,
-            lastSeen:
-              serverTimestamp()
-          },
-          {
-            merge: true
-          }
-        );
-
-      }
-
-    },
-    60000
-  );
-
-
-  /*
-    Escape HTML
-  */
-
-  function escapeHtml(value) {
-
-    return String(value)
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      )
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-      .replace(
-        /'/g,
-        "&#039;"
-      );
-
-  }
-
-</script>
-
+    });
+  </script>
 </body>
-  </html>
+</html>
